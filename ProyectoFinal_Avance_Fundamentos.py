@@ -15,6 +15,67 @@
 
 expedientes = []
 
+#Funcion para validar el formato de la fecha ingresada
+
+def validar_fecha(fecha):
+    # Separamos la fecha usando "/"
+    partes = fecha.split("/")
+
+    # La fecha debe tener:
+    # dia / mes / año
+    if len(partes) != 3:
+        return False
+
+    dia = partes[0]
+    mes = partes[1]
+    año = partes[2]
+
+    # Verificamos la cantidad de caracteres
+    if len(dia) != 2:
+        return False
+
+    if len(mes) != 2:
+        return False
+
+    if len(año) != 4:
+        return False
+
+    # Verificamos que el día tenga solo números
+    for caracter in dia:
+
+        if caracter < "0" or caracter > "9":
+            return False
+
+    # Verificamos que el mes tenga solo números
+    for caracter in mes:
+
+        if caracter < "0" or caracter > "9":
+            return False
+
+    # Verificamos que el año tenga solo números
+    for caracter in año:
+
+        if caracter < "0" or caracter > "9":
+            return False
+
+    # Convertimos los datos a números
+    dia = int(dia)
+    mes = int(mes)
+    anio = int(año)
+
+    # Validamos los rangos
+    if dia < 1 or dia > 31:
+        return False
+
+    if mes < 1 or mes > 12:
+        return False
+
+    if anio < 2026 or año > 2100:
+        return False
+
+    return True
+
+
 
 # ------------------------------------------------------------
 # FUNCIÓN PARA VALIDAR EL DNI
