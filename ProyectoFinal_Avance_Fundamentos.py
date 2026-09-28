@@ -95,22 +95,19 @@ def registrar_expediente():
     # ----------------------------------------
 
     print("\nSeleccione el tipo de trámite:")
-    print("1. Reclamo")
-    print("2. Queja")
+    print("2. Queja y Reclamos")
     print("3. Solicitud")
     print("4. Consulta")
 
     opcion = input("Ingrese una opción: ")
-
-    while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4":
+#Se modifico Las opciones de tramites
+    while opcion != "1" and opcion != "2" and opcion != "3" :
         print("Opción incorrecta.")
         opcion = input("Ingrese una opción: ")
 
     if opcion == "1":
-        tipo = "Reclamo"
+        tipo = "Quejas y Reclamos"
     elif opcion == "2":
-        tipo = "Queja"
-    elif opcion == "3":
         tipo = "Solicitud"
     else:
         tipo = "Consulta"
