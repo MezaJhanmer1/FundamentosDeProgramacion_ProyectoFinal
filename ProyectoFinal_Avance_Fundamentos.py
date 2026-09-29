@@ -61,7 +61,7 @@ def validar_fecha(fecha):
     # Convertimos los datos a números
     dia = int(dia)
     mes = int(mes)
-    anio = int(año)
+    año = int(año)
 
     # Validamos los rangos
     if dia < 1 or dia > 31:
@@ -70,7 +70,7 @@ def validar_fecha(fecha):
     if mes < 1 or mes > 12:
         return False
 
-    if anio < 2026 or año > 2100:
+    if año < 2026 or año > 2100:
         return False
 
     return True
@@ -188,6 +188,13 @@ def registrar_expediente():
     # ----------------------------------------
 
     fecha = input("Ingrese la fecha (DD/MM/AAAA): ")
+    # Mientras la fecha sea incorrecta, la volvemos a pedir
+    while validar_fecha(fecha) == False:
+
+        print("Fecha incorrecta.")
+        print("Debe utilizar el formato DD/MM/AAAA.")
+
+        fecha = input("Ingrese la fecha (DD/MM/AAAA): ")
 
     # ----------------------------------------
     # ESTADO INICIAL
