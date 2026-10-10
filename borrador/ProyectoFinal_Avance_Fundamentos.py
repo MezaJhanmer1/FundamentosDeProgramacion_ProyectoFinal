@@ -1,5 +1,5 @@
 # ============================================================
-# SISTEMA DE MESA DE PARTES DIGITAL - SEDAPAL SJL v 0.1
+# SISTEMA DE MESA DE PARTES DIGITAL - SEDAPAL SJL v 0.1.1
 # ============================================================
 # Este programa permite registrar y consultar expedientes
 # de los usuarios de SEDAPAL - San Juan de Lurigancho.
@@ -76,6 +76,11 @@ def validar_fecha(fecha):
     return True
 
 def texto_valido(texto):
+        texto_limpio = texto.strip()
+    
+        if texto_limpio == "":          # Si el usuario no escribió nada, no es válido
+         return False
+        
     # Definimos nuestra lista de caracteres aprobados
         permitidas = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ "
     
@@ -86,6 +91,51 @@ def texto_valido(texto):
             
         return True  # Si el ciclo termina y todo estuvo bien, dice: "Sí es válido"
 
+def validar_correo(email):
+    
+    email_limpio = email.strip().lower()        #quita espacios + minusculas
+    caracteres_prohibidos = " ,()[]{}!¡¿?/*;:<>=#$"     # --- FILTRO DE CARACTERES PROHIBIDOS ---
+    
+    for caracter in email_limpio:
+        if caracter in caracteres_prohibidos:
+            return False # Si encuentra un carácter prohibido, el correo es inválido
+
+    if "@" in email_limpio:
+        partes = email_limpio.split("@")        # corta en 2 partes (usuario + @ + dominio) ["juan.perez", "gmail.com"]
+        dominio = partes[1]                     # pedimos q guarde el 2do elemento [1]
+        
+        if "." in dominio:                      # el DOMINIO tenga un punto (para el .com, .net, etc.)
+            return True
+        
+    return False
+
+# ----------------------------------------------------------------------
+# FUNCIÓN PARA VALIDAR TELÉFONOS (FIJOS Y CELULARES EN PERÚ)
+# ----------------------------------------------------------------------
+def validar_telefono(telefono):
+    tel_limpio = telefono.strip()       # Quitamos espacios en blanco por si el usuario los puso
+    
+    # REGLA 1: Solo debe contener números
+    for caracter in tel_limpio:
+        if caracter not in "0123456789":
+            return False
+        
+    longitud = len(tel_limpio)
+    primer_digito = tel_limpio[0]
+    
+    if primer_digito == "9":            # REGLA 2: Si es un celular (Empieza con 9)
+        if longitud == 9:
+            return True
+        else:
+            return False # Celular incorrecto si no tiene 9 dígitos
+            
+    elif primer_digito in ["2", "3", "4", "5", "6", "7", "8"]:      # REGLA 3: Si es un teléfono fijo o rural (Empieza entre 2 y 8)
+        if longitud == 6 or longitud == 7:                          # Acepta 7 dígitos (Lima/Callao) o 6 dígitos (Provincias)
+            return True
+        else:
+            return False                                # Fijo incorrecto si no tiene 6 o 7 dígitos
+            
+    return False                            # Si empieza con 0, 1 o cualquier otro carácter, es inválido
 
 # ------------------------------------------------------------
 # FUNCIÓN PARA VALIDAR EL DNI
@@ -163,7 +213,7 @@ def registrar_expediente():
     while nombre == "" or texto_valido(nombre) == False:
         print("El nombre no puede estar vacío o estar digitado de forma incorrecta.")
         nombre = input("Ingrese el nombre completo: ")
-
+    
     apellidos = input("Ingrese sus apellidos completos: ")
     
         # Verificamos que no esté vacío
@@ -171,7 +221,22 @@ def registrar_expediente():
             print("El apellido no puede estar vacío o estar digitado de forma incorrecta.")
             apellidos = input("Ingrese los apellidos completos: ")
 
+    # --- NUEVOS CAMPOS DE CONTACTO ---
+    # Pedimos el número de teléfono
+    nro_telefono = input("Ingrese el número de teléfono/celular: ")
 
+    while nro_telefono == "" or validar_telefono(nro_telefono) == False:
+            print("Error: El número ingresado no es un celular válido de 9 dígitos (inicia con 9) ")
+            print("       ni un teléfono fijo válido de 6 o 7 dígitos (inicia del 2 al 8).")
+            nro_telefono = input("Ingrese el número de teléfono nuevamente: ")
+
+    # Pedimos el correo electrónico
+    correo = input("Ingrese el correo electrónico del ciudadano: ")
+
+    # Verificamos que no esté vacío
+    while correo == "" or validar_correo(correo) == False:
+        print("El correo electrónico no puede estar vacío o estar digitado de forma incorrecta.")
+        correo = input("Ingrese el correo electrónico nuevamente: ")
 
 
     # ----------------------------------------
@@ -236,6 +301,8 @@ def registrar_expediente():
         dni,
         nombre,
         apellidos,
+        nro_telefono,
+        correo,
         tipo,
         descripcion,
         "SJL",
@@ -276,11 +343,13 @@ def mostrar_expedientes():
             print("Código:", expediente[0])
             print("DNI:", expediente[1])
             print("Ciudadano:", expediente[2] +" "+ expediente[3])
-            print("Tipo:", expediente[4])
-            print("Descripción:", expediente[5])
-            print("Sede:", expediente[6])
-            print("Fecha:", expediente[7])
-            print("Estado:", expediente[8])
+            print("Telefono/Celular:", expediente[4])
+            print("Correo electrónico:", expediente[5])
+            print("Tipo:", expediente[6])
+            print("Descripción:", expediente[7])
+            print("Sede:", expediente[8])
+            print("Fecha:", expediente[9])
+            print("Estado:", expediente[10])
 
         print("------------------------------------------")
 
@@ -308,11 +377,13 @@ def buscar_expediente():
             print("Código:", expediente[0])
             print("DNI:", expediente[1])
             print("Ciudadano:", expediente[2] +" "+ expediente[3])
-            print("Tipo:", expediente[4])
-            print("Descripción:", expediente[5])
-            print("Sede:", expediente[6])
-            print("Fecha:", expediente[7])
-            print("Estado:", expediente[8])
+            print("Telefono/Celular:", expediente[4])
+            print("Correo electrónico:", expediente[5])
+            print("Tipo:", expediente[6])
+            print("Descripción:", expediente[7])
+            print("Sede:", expediente[8])
+            print("Fecha:", expediente[9])
+            print("Estado:", expediente[10])
             print("------------------------------------------")
 
             encontrado = True
@@ -344,7 +415,8 @@ def actualizar_estado():
             encontrado = True
 
             print("\nExpediente encontrado.")
-            print("Estado actual:", expediente[7])
+            print("Código:", expediente[0])
+            print("Estado actual:", expediente[10])
 
             print("\nSeleccione el nuevo estado:")
             print("1. Pendiente")
@@ -358,16 +430,17 @@ def actualizar_estado():
                 opcion = input("Ingrese una opción: ")
 
             if opcion == "1":
-                expediente[8] = "Pendiente"
+                expediente[10] = "Pendiente"
 
             elif opcion == "2":
-                expediente[8] = "En proceso"
+                expediente[10] = "En proceso"
 
             else:
-                expediente[8] = "Atendido"
+                expediente[10] = "Atendido"
 
             print("\nEstado actualizado correctamente.")
-            print("Nuevo estado:", expediente[8])
+            print("Código:", expediente[0])
+            print("Nuevo estado:", expediente[10])
 
     if encontrado == False:
         print("No se encontró el expediente.")
@@ -426,11 +499,13 @@ def guardar_archivo():
             archivo.write("Código: " + expediente[0] + "\n")
             archivo.write("DNI: " + expediente[1] + "\n")
             archivo.write("Ciudadano: " + expediente[2] +" "+ expediente[3] + "\n")
-            archivo.write("Tipo: " + expediente[4] + "\n")
-            archivo.write("Descripción: " + expediente[5] + "\n")
-            archivo.write("Sede: " + expediente[6] + "\n")
-            archivo.write("Fecha: " + expediente[7] + "\n")
-            archivo.write("Estado: " + expediente[8] + "\n")
+            archivo.write("Telefono/Celular:" + expediente[4] + "\n")
+            archivo.write("Correo electrónico:" + expediente[5] + "\n")
+            archivo.write("Tipo: " + expediente[6] + "\n")
+            archivo.write("Descripción: " + expediente[7] + "\n")
+            archivo.write("Sede: " + expediente[8] + "\n")
+            archivo.write("Fecha: " + expediente[9] + "\n")
+            archivo.write("Estado: " + expediente[10] + "\n")
 
         # Cerramos el archivo
         archivo.close()
@@ -532,9 +607,7 @@ def menu():
 
             print("\nOpción incorrecta. Intente nuevamente.")
 
-
 # ------------------------------------------------------------
 # INICIO DEL PROGRAMA
 # ------------------------------------------------------------
-
 menu()
