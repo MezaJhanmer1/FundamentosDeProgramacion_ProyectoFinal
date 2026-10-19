@@ -1,79 +1,64 @@
 # ============================================================
-# SISTEMA DE MESA DE PARTES DIGITAL - SEDAPAL SJL v 0.1.1
+# SISTEMA DE MESA DE PARTES DIGITAL - SEDAPAL SJL v 0.1.2
 # ============================================================
 # Este programa permite registrar y consultar expedientes
 # de los usuarios de SEDAPAL - San Juan de Lurigancho.
-#
+# Version de proyecto Ver 0.1.2
 # ============================================================
 
-
 # ------------------------------------------------------------
-# LISTA PRINCIPAL
+# LISTA PRINCIPAL DE EXPEDIENTES
 # ------------------------------------------------------------
-# Esta lista almacenará todos los expedientes registrados.
+# Esta lista almacenará todos los expedientes registrados, Cada expediente será una lista con sus datos.
 # Por ahora no utilizamos una base de datos.
-
 expedientes = []
 
-#Funcion para validar el formato de la fecha ingresada
+# ------------------------------------------------------------
+# LISTAS PARA SIMULAR UNA CONSULTA A RENIEC
+# Estos son datos de prueba, no una consulta oficial.
+# ------------------------------------------------------------
+reniec_dni = [
+    "60549429", "11111111", "22222222", "33333333", "44444444",
+    "55555555", "66666666", "77777777", "88888888", "99999999",
+    "10101010", "12121212", "13131313", "14141414", "15151515",
+    "16161616", "17171717", "18181818", "19191919", "20202020",
+    "21212121", "23232323", "24242424", "25252525", "26262626",
+    "27272727", "28282828", "29292929", "30303030", "31313131"
+]
 
-def validar_fecha(fecha):
-    # Separamos la fecha usando "/"
-    partes = fecha.split("/")
+reniec_nombres = [
+    "Jhanmer", "Ana", "Carlos", "Maria", "Luis", "Rosa", "Pedro",
+    "Lucia", "Jose", "Carmen", "Miguel", "Elena", "Jorge", "Patricia",
+    "Diego", "Andrea", "Marco", "Sofia", "Daniel", "Valeria", "Fernando",
+    "Gabriela", "Alberto", "Claudia", "Ricardo", "Monica", "Eduardo",
+    "Paola", "Oscar", "Teresa"
+]
 
-    # La fecha debe tener:
-    # dia / mes / año
-    if len(partes) != 3:
-        return False
+reniec_apellidos = [
+    "Meza", "Torres", "Ramirez", "Flores", "Mendoza", "Castillo", "Vargas",
+    "Herrera", "Rojas", "Diaz", "Soto", "Cruz", "Ramos", "Leon", "Silva",
+    "Ruiz", "Vega", "Castro", "Paredes", "Reyes", "Luna", "Rios", "Salas",
+    "Peña", "Flores", "Campos", "Chavez", "Medina", "Navarro", "Aguilar"
+]
 
-    dia = partes[0]
-    mes = partes[1]
-    año = partes[2]
+# ------------------------------------------------------------
+# LISTAS PARA LOS USUARIOS DEL SISTEMA (LISTAS PARALELAS)
+# Perfil 1 = Persona natural
+# Perfil 2 = Administrador
+# Las dos cuentas iniciales son de demostración.
+# ------------------------------------------------------------
+usuarios_dni = ["60549429", "12345678"]
+usuarios_nombres = ["Jhanmer", "Carlos"]
+usuarios_apellidos = ["Meza", "Ramirez"]
+usuarios_telefono = ["", ""]
+usuarios_correo = ["", ""]
+usuarios_claves = ["admin123", "admin456"]
+usuarios_perfiles = [2, 2]
 
-    # Verificamos la cantidad de caracteres
-    if len(dia) != 2:
-        return False
 
-    if len(mes) != 2:
-        return False
-
-    if len(año) != 4:
-        return False
-
-    # Verificamos que el día tenga solo números
-    for caracter in dia:
-
-        if caracter < "0" or caracter > "9":
-            return False
-
-    # Verificamos que el mes tenga solo números
-    for caracter in mes:
-
-        if caracter < "0" or caracter > "9":
-            return False
-
-    # Verificamos que el año tenga solo números
-    for caracter in año:
-
-        if caracter < "0" or caracter > "9":
-            return False
-
-    # Convertimos los datos a números
-    dia = int(dia)
-    mes = int(mes)
-    año = int(año)
-
-    # Validamos los rangos
-    if dia < 1 or dia > 31:
-        return False
-
-    if mes < 1 or mes > 12:
-        return False
-
-    if año < 2026 or año > 2100:
-        return False
-
-    return True
+# ============================================================
+# FUNCION PARA VALIDAR TEXTO CON LETRAS Y ESPACIOS
+# ============================================================
 
 def texto_valido(texto):
         texto_limpio = texto.strip()
@@ -84,13 +69,86 @@ def texto_valido(texto):
     # Definimos nuestra lista de caracteres aprobados
         permitidas = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ "
     
-    # Revisamos cada letra igual que en tu ejemplo
         for letra in texto:
             if letra not in permitidas:
                 return False  # Si encuentra un número o símbolo, frena y dice: "No es válido"
             
         return True  # Si el ciclo termina y todo estuvo bien, dice: "Sí es válido"
 
+# ============================================================
+# FUNCIÓN PARA VALIDAR EL DNI
+# ============================================================
+def validar_dni(dni):
+
+    # Verificamos que el DNI tenga exactamente 8 caracteres
+    if len(dni) != 8:
+        return False
+
+    # Verificamos que todos los caracteres sean números
+    for caracter in dni:
+        if caracter < "0" or caracter > "9":
+            return False
+
+    return True
+
+# ============================================================
+# FUNCION PARA VALIDAR LA FECHA DD/MM/AAAA
+# ============================================================
+def validar_fecha(fecha):
+    partes = fecha.split("/")
+
+    if len(partes) != 3:
+        return False
+
+    dia_texto = partes[0]
+    mes_texto = partes[1]
+    anio_texto = partes[2]
+
+    if len(dia_texto) != 2 or len(mes_texto) != 2 or len(anio_texto) != 4:
+        return False
+
+    for caracter in dia_texto:
+        if caracter < "0" or caracter > "9":
+            return False
+
+    for caracter in mes_texto:
+        if caracter < "0" or caracter > "9":
+            return False
+
+    for caracter in anio_texto:
+        if caracter < "0" or caracter > "9":
+            return False
+
+    dia = int(dia_texto)
+    mes = int(mes_texto)
+    anio = int(anio_texto)
+
+    if anio < 2026 or anio > 2100:
+        return False
+
+    if mes < 1 or mes > 12:
+        return False
+
+    # Comprobamos cuantos dias tiene el mes.
+    if mes == 4 or mes == 6 or mes == 9 or mes == 11:
+        maximo_dias = 30
+    elif mes == 2:
+        # Regla sencilla para reconocer años bisiestos.
+        if anio % 400 == 0 or (anio % 4 == 0 and anio % 100 != 0):
+            maximo_dias = 29
+        else:
+            maximo_dias = 28
+    else:
+        maximo_dias = 31
+
+    if dia < 1 or dia > maximo_dias:
+        return False
+
+    return True
+
+# ============================================================
+# FUNCION PARA VALIDAR CORREO
+# ============================================================
 def validar_correo(email):
     
     email_limpio = email.strip().lower()        #quita espacios + minusculas
@@ -109,11 +167,14 @@ def validar_correo(email):
         
     return False
 
-# ----------------------------------------------------------------------
-# FUNCIÓN PARA VALIDAR TELÉFONOS (FIJOS Y CELULARES EN PERÚ)
-# ----------------------------------------------------------------------
+# ============================================================
+# FUNCION PARA VALIDAR TELEFONO
+# ============================================================
 def validar_telefono(telefono):
     tel_limpio = telefono.strip()       # Quitamos espacios en blanco por si el usuario los puso
+    
+    if len(tel_limpio) == 0:            # Evitamos validar textos vacíos
+        return False
     
     # REGLA 1: Solo debe contener números
     for caracter in tel_limpio:
@@ -128,41 +189,38 @@ def validar_telefono(telefono):
             return True
         else:
             return False # Celular incorrecto si no tiene 9 dígitos
-            
+        
+    elif primer_digito == "1":          # REGLA 3: Si es un teléfono fijo de Lima/Callao
+        if longitud == 7:               # En Lima obligatoriamente son 7 dígitos
+            return True
+        else:
+            return False
+
     elif primer_digito in ["2", "3", "4", "5", "6", "7", "8"]:      # REGLA 3: Si es un teléfono fijo o rural (Empieza entre 2 y 8)
-        if longitud == 6 or longitud == 7:                          # Acepta 7 dígitos (Lima/Callao) o 6 dígitos (Provincias)
+        if longitud == 6:                          # Acepta 7 dígitos (Lima/Callao) o 6 dígitos (Provincias)
             return True
         else:
             return False                                # Fijo incorrecto si no tiene 6 o 7 dígitos
             
     return False                            # Si empieza con 0, 1 o cualquier otro carácter, es inválido
 
-# ------------------------------------------------------------
-# FUNCIÓN PARA VALIDAR EL DNI
-# ------------------------------------------------------------
-def validar_dni(dni):
+# ============================================================
+# FUNCION PARA SIMULAR LA CONSULTA A RENIEC
+# Devuelve nombre y apellido si encuentra el DNI.
+# ============================================================
+def consultar_reniec(dni):
+    for i in range(len(reniec_dni)):
+        if reniec_dni[i] == dni:
+            return reniec_nombres[i], reniec_apellidos[i]
 
-    # Verificamos que el DNI tenga exactamente 8 caracteres
-    if len(dni) != 8:
-        return False
-
-    # Verificamos que todos los caracteres sean números
-    for caracter in dni:
-        if caracter < "0" or caracter > "9":
-            return False
-
-    return True
+    return "", ""
 
 
-# ------------------------------------------------------------
-# FUNCIÓN PARA GENERAR EL CÓDIGO DEL EXPEDIENTE
-# ------------------------------------------------------------
+# ============================================================
+# FUNCION PARA GENERAR CODIGO DE EXPEDIENTE
+# ============================================================
 def generar_codigo():
-
-    # La cantidad de expedientes nos sirve para generar
-    # un código diferente para cada registro.
-
-    numero = len(expedientes) + 1
+    numero = len(expedientes) + 1           
 
     if numero < 10:
         codigo = "SED-000" + str(numero)
@@ -174,203 +232,255 @@ def generar_codigo():
     return codigo
 
 
+# ============================================================
+# FUNCION PARA REGISTRAR UN USUARIO NUEVO
+# Los usuarios nuevos siempre son personas naturales.
+# ============================================================
+def registrar_usuario():
+    print("\n========================================")
+    print("          CREAR NUEVO USUARIO")
+    print("========================================")
+
+    dni = input("Ingrese su DNI: ").strip()
+
+    while validar_dni(dni) == False:
+        print("El DNI debe tener exactamente 8 numeros.")
+        dni = input("Ingrese su DNI nuevamente: ").strip()
+
+    # Evitamos crear dos cuentas con el mismo DNI.
+    for i in range(len(usuarios_dni)):
+        if usuarios_dni[i] == dni:
+            print("Este DNI ya tiene una cuenta en el sistema.")
+            return
+
+    # Buscamos el DNI en nuestra lista simulada.
+    nombre, apellidos = consultar_reniec(dni)
+
+    if nombre == "":
+        print("DNI no encontrado en la lista simulada.")
+        print("No se puede completar el registro.")
+        return
+
+    print("Nombre encontrado:", nombre)
+    print("Apellidos encontrados:", apellidos)
+
+    telefono = input("Ingrese su telefono/celular: ").strip()
+    while validar_telefono(telefono) == False:
+        print("Telefono incorrecto. Revise la cantidad de digitos.")
+        telefono = input("Ingrese su telefono/celular nuevamente: ").strip()
+
+    correo = input("Ingrese su correo: ").strip()
+    while validar_correo(correo) == False:
+        print("Correo incorrecto.")
+        correo = input("Ingrese su correo nuevamente: ").strip()
+
+    clave = input("Cree su contraseña: ")
+    while clave == "":
+        print("La contraseña no puede estar vacia.")
+        clave = input("Cree su contraseña: ")
+
+    # Guardamos los datos en la misma posicion de cada lista.
+    usuarios_dni.append(dni)
+    usuarios_nombres.append(nombre)
+    usuarios_apellidos.append(apellidos)
+    usuarios_telefono.append(telefono)
+    usuarios_correo.append(correo)
+    usuarios_claves.append(clave)
+    usuarios_perfiles.append(1)
+
+    print("\nUsuario registrado correctamente.")
+    print("Tu perfil es: Persona natural.")
+    print("Ya puedes iniciar sesion.")
+
+
+# ============================================================
+# FUNCION PARA INICIAR SESION
+# Devuelve la posicion del usuario o -1 si falla.
+# ============================================================
+def iniciar_sesion():
+    print("\n========================================")
+    print("              INICIAR SESION")
+    print("========================================")
+
+    dni = input("Ingrese su usuario (DNI): ").strip()
+    clave = input("Ingrese su contraseña: ")
+
+    for i in range(len(usuarios_dni)):
+        if usuarios_dni[i] == dni:
+            if usuarios_claves[i] == clave:
+                print("\nBienvenido:", usuarios_nombres[i], usuarios_apellidos[i])
+                if usuarios_perfiles[i] == 2:
+                    print("Perfil: Administrador")
+                else:
+                    print("Perfil: Persona natural")
+                return i
+            else:
+                print("Contraseña incorrecta.")
+                return -1
+
+    print("Usuario no registrado.")
+    return -1
+
 # ------------------------------------------------------------
 # FUNCIÓN PARA REGISTRAR UN EXPEDIENTE
 # ------------------------------------------------------------
-def registrar_expediente():
+def registrar_expediente(posicion_usuario):
+    print("\n========================================")
+    print("          REGISTRO DE EXPEDIENTE")
+    print("========================================")
 
-    print("\n==========================================")
-    print("       REGISTRO DE EXPEDIENTE")
-    print("==========================================")
-
-    # Generamos automáticamente el código
     codigo = generar_codigo()
+    print("Codigo del expediente:", codigo)
 
-    print("Código del expediente:", codigo)
-
-    # ----------------------------------------
-    # INGRESO DEL DNI
-    # ----------------------------------------
-
-    dni = input("Ingrese el DNI del ciudadano: ")
-
-    # Repetimos mientras el DNI sea incorrecto
+    dni = input("Ingrese el DNI del ciudadano: ").strip()
     while validar_dni(dni) == False:
+        print("Error: el DNI debe tener exactamente 8 numeros.")
+        dni = input("Ingrese nuevamente el DNI: ").strip()
 
-        print("Error: el DNI debe tener exactamente 8 números.")
-        dni = input("Ingrese nuevamente el DNI: ")
+    # La persona natural solo puede registrar con su propio DNI.
+    if usuarios_perfiles[posicion_usuario] == 1 and dni != usuarios_dni[posicion_usuario]:
+        print("Por seguridad, solo puedes registrar expedientes con tu propio DNI.")
+        return
 
+    nombre, apellidos = consultar_reniec(dni)
 
+    while nombre == "":
+        print("DNI no encontrado en la lista simulada.")
+        dni = input("Ingrese otro DNI: ").strip()
 
-    # ----------------------------------------
-    # INGRESO DEL NOMBRE
-    # ----------------------------------------
+        while validar_dni(dni) == False:
+            print("Error: el DNI debe tener exactamente 8 numeros.")
+            dni = input("Ingrese nuevamente el DNI: ").strip()
 
+        if usuarios_perfiles[posicion_usuario] == 1 and dni != usuarios_dni[posicion_usuario]:
+            print("Solo puedes registrar expedientes con tu propio DNI.")
+            return
 
-    nombre = input("Ingrese el nombre completo: ")
+        nombre, apellidos = consultar_reniec(dni)
 
-    # Verificamos que no esté vacío
-    while nombre == "" or texto_valido(nombre) == False:
-        print("El nombre no puede estar vacío o estar digitado de forma incorrecta.")
-        nombre = input("Ingrese el nombre completo: ")
-    
-    apellidos = input("Ingrese sus apellidos completos: ")
-    
-        # Verificamos que no esté vacío
-    while apellidos == "" or texto_valido(apellidos) == False:
-            print("El apellido no puede estar vacío o estar digitado de forma incorrecta.")
-            apellidos = input("Ingrese los apellidos completos: ")
+    print("Nombre encontrado:", nombre)
+    print("Apellidos encontrados:", apellidos)
 
-    # --- NUEVOS CAMPOS DE CONTACTO ---
-    # Pedimos el número de teléfono
-    nro_telefono = input("Ingrese el número de teléfono/celular: ")
+    telefono = input("Ingrese el telefono/celular de contacto: ").strip()
+    while validar_telefono(telefono) == False:
+        print("Telefono incorrecto. Ingrese un numero valido.")
+        telefono = input("Ingrese el telefono/celular nuevamente: ").strip()
 
-    while nro_telefono == "" or validar_telefono(nro_telefono) == False:
-            print("Error: El número ingresado no es un celular válido de 9 dígitos (inicia con 9) ")
-            print("       ni un teléfono fijo válido de 6 o 7 dígitos (inicia del 2 al 8).")
-            nro_telefono = input("Ingrese el número de teléfono nuevamente: ")
+    correo = input("Ingrese el correo electronico de contacto: ").strip()
+    while validar_correo(correo) == False:
+        print("Correo electronico incorrecto.")
+        correo = input("Ingrese el correo nuevamente: ").strip()
 
-    # Pedimos el correo electrónico
-    correo = input("Ingrese el correo electrónico del ciudadano: ")
-
-    # Verificamos que no esté vacío
-    while correo == "" or validar_correo(correo) == False:
-        print("El correo electrónico no puede estar vacío o estar digitado de forma incorrecta.")
-        correo = input("Ingrese el correo electrónico nuevamente: ")
-
-
-    # ----------------------------------------
-    # TIPO DE TRÁMITE
-    # ----------------------------------------
-
-    print("\nSeleccione el tipo de trámite:")
-    print("1. Queja y Reclamos")
+    print("\nSeleccione el tipo de tramite:")
+    print("1. Queja y reclamo")
     print("2. Solicitud")
     print("3. Consulta")
+    opcion = input("Ingrese una opcion: ").strip()
 
-    opcion = input("Ingrese una opción: ")
-#Se modifico Las opciones de tramites
-    while opcion != "1" and opcion != "2" and opcion != "3" :
-        print("Opción incorrecta.")
-        opcion = input("Ingrese una opción: ")
+    while opcion != "1" and opcion != "2" and opcion != "3":
+        print("Opcion incorrecta.")
+        opcion = input("Ingrese una opcion: ").strip()
 
     if opcion == "1":
-        tipo = "Quejas y Reclamos"
+        tipo = "Queja y reclamo"
     elif opcion == "2":
         tipo = "Solicitud"
     else:
         tipo = "Consulta"
 
-    # ----------------------------------------
-    # DESCRIPCIÓN
-    # ----------------------------------------
-
-    descripcion = input("Ingrese la descripción del trámite: ")
-
+    descripcion = input("Ingrese la descripcion del tramite: ").strip()
     while descripcion == "":
-        print("La descripción no puede estar vacía.")
-        descripcion = input("Ingrese la descripción del trámite: ")
+        print("La descripcion no puede estar vacia.")
+        descripcion = input("Ingrese la descripcion del tramite: ").strip()
 
-    # ----------------------------------------
-    # FECHA
-    # ----------------------------------------
-
-    fecha = input("Ingrese la fecha (DD/MM/AAAA): ")
-    # Mientras la fecha sea incorrecta, la volvemos a pedir
+    fecha = input("Ingrese la fecha (DD/MM/AAAA): ").strip()
     while validar_fecha(fecha) == False:
+        print("Fecha incorrecta. Use el formato DD/MM/AAAA y una fecha valida.")
+        fecha = input("Ingrese la fecha (DD/MM/AAAA): ").strip()
 
-        print("Fecha incorrecta.")
-        print("Debe utilizar el formato DD/MM/AAAA.")
+    print("\nSeleccione la prioridad:")
+    print("1. Alta")
+    print("2. Media")
+    print("3. Baja")
 
-        fecha = input("Ingrese la fecha (DD/MM/AAAA): ")
+    # Las personas naturales no eligen prioridad alta por su cuenta.
+    if usuarios_perfiles[posicion_usuario] == 1:
+        prioridad = "Media"
+        print("Tu expediente se registrara con prioridad Media.")
+    else:
+        opcion_prioridad = input("Ingrese una opcion: ").strip()
+        while opcion_prioridad != "1" and opcion_prioridad != "2" and opcion_prioridad != "3":
+            print("Opcion incorrecta.")
+            opcion_prioridad = input("Ingrese una opcion: ").strip()
 
-    # ----------------------------------------
-    # ESTADO INICIAL
-    # ----------------------------------------
+        if opcion_prioridad == "1":
+            prioridad = "Alta"
+        elif opcion_prioridad == "2":
+            prioridad = "Media"
+        else:
+            prioridad = "Baja"
 
     estado = "Pendiente"
 
-    # ----------------------------------------
-    # CREACIÓN DEL EXPEDIENTE
-    # ----------------------------------------
-    # Utilizamos una lista para guardar los datos
-    # de un solo expediente.
-
+    # Cada expediente es una lista. Los datos mantienen sus posiciones.
     expediente = [
-        codigo,
-        dni,
-        nombre,
-        apellidos,
-        nro_telefono,
-        correo,
-        tipo,
-        descripcion,
-        "SJL",
-        fecha,
-        estado
+        codigo, dni, nombre, apellidos, telefono, correo,
+        tipo, descripcion, "SJL", fecha, estado, prioridad
     ]
 
-    # Agregamos el expediente a la lista principal
     expedientes.append(expediente)
 
-    print("\n==========================================")
-    print("Expediente registrado correctamente.")
-    print("Código:", codigo)
+    print("\nExpediente registrado correctamente.")
+    print("Codigo:", codigo)
+    print("Prioridad:", prioridad)
     print("Estado:", estado)
-    print("==========================================")
 
 
 # ------------------------------------------------------------
 # FUNCIÓN PARA MOSTRAR TODOS LOS EXPEDIENTES
 # ------------------------------------------------------------
-def mostrar_expedientes():
+def mostrar_expedientes(posicion_usuario):
+    print("\n========================================")
+    print("             EXPEDIENTES")
+    print("========================================")
 
-    print("\n==========================================")
-    print("          LISTA DE EXPEDIENTES")
-    print("==========================================")
+    encontrados = 0
 
-    # Verificamos si la lista está vacía
-    if len(expedientes) == 0:
-
-        print("No existen expedientes registrados.")
-
-    else:
-
-        # Recorremos todos los expedientes
-        for expediente in expedientes:
-
-            print("------------------------------------------")
-            print("Código:", expediente[0])
+    for expediente in expedientes:
+        if usuarios_perfiles[posicion_usuario] == 2 or expediente[1] == usuarios_dni[posicion_usuario]:
+            print("----------------------------------------")
+            print("Codigo:", expediente[0])
             print("DNI:", expediente[1])
-            print("Ciudadano:", expediente[2] +" "+ expediente[3])
-            print("Telefono/Celular:", expediente[4])
-            print("Correo electrónico:", expediente[5])
+            print("Ciudadano:", expediente[2], expediente[3])
+            print("Telefono:", expediente[4])
+            print("Correo:", expediente[5])
             print("Tipo:", expediente[6])
-            print("Descripción:", expediente[7])
+            print("Descripcion:", expediente[7])
             print("Sede:", expediente[8])
             print("Fecha:", expediente[9])
             print("Estado:", expediente[10])
+            print("Prioridad:", expediente[11])
+            encontrados = encontrados + 1
 
-        print("------------------------------------------")
-
+    if encontrados == 0:
+        print("No hay expedientes para mostrar.")
 
 # ------------------------------------------------------------
 # FUNCIÓN PARA BUSCAR UN EXPEDIENTE
 # ------------------------------------------------------------
-def buscar_expediente():
+def buscar_expediente(posicion_usuario):
 
     print("\n==========================================")
     print("        BUSCAR EXPEDIENTE")
     print("==========================================")
-
-    codigo_buscar = input("Ingrese el código del expediente: ")
-
+    codigo_buscar = input("Ingrese el código del expediente: ").strip()
     encontrado = False
 
-    # Recorremos la lista buscando el código
     for expediente in expedientes:
-
         if expediente[0] == codigo_buscar:
+            # La persona natural solo puede consultar sus propios expedientes.
+            if usuarios_perfiles[posicion_usuario] == 1 and expediente[1] != usuarios_dni[posicion_usuario]:
+                continue
 
             print("\nExpediente encontrado:")
             print("------------------------------------------")
@@ -384,59 +494,47 @@ def buscar_expediente():
             print("Sede:", expediente[8])
             print("Fecha:", expediente[9])
             print("Estado:", expediente[10])
-            print("------------------------------------------")
-
+            print("Prioridad:", expediente[11])
             encontrado = True
 
     # Si después de recorrer la lista no encontramos
     # el expediente, mostramos un mensaje.
     if encontrado == False:
-        print("No se encontró el expediente.")
+        print("No se encontro el expediente o no tienes permiso para verlo.")
 
 
 # ------------------------------------------------------------
-# FUNCIÓN PARA ACTUALIZAR EL ESTADO
+# FUNCIÓN PARA ACTUALIZAR EL ESTADO (SOLO ADMINISTRADOR)
 # ------------------------------------------------------------
 def actualizar_estado():
 
     print("\n==========================================")
     print("       ACTUALIZAR ESTADO")
     print("==========================================")
-
-    codigo_buscar = input("Ingrese el código del expediente: ")
+    codigo_buscar = input("Ingrese el código del expediente: ").strip()
 
     encontrado = False
 
     # Buscamos el expediente
     for expediente in expedientes:
-
         if expediente[0] == codigo_buscar:
-
             encontrado = True
-
-            print("\nExpediente encontrado.")
-            print("Código:", expediente[0])
             print("Estado actual:", expediente[10])
-
-            print("\nSeleccione el nuevo estado:")
             print("1. Pendiente")
             print("2. En proceso")
             print("3. Atendido")
-
-            opcion = input("Ingrese una opción: ")
-
+            opcion = input("Seleccione el nuevo estado: ").strip()
+    
             while opcion != "1" and opcion != "2" and opcion != "3":
-                print("Opción incorrecta.")
-                opcion = input("Ingrese una opción: ")
-
+                print("Opcion incorrecta.")
+                opcion = input("Seleccione el nuevo estado: ").strip()
+    
             if opcion == "1":
-                expediente[10] = "Pendiente"
-
+                    expediente[10] = "Pendiente"
             elif opcion == "2":
-                expediente[10] = "En proceso"
-
+                    expediente[10] = "En proceso"
             else:
-                expediente[10] = "Atendido"
+                    expediente[10] = "Atendido"
 
             print("\nEstado actualizado correctamente.")
             print("Código:", expediente[0])
@@ -446,9 +544,10 @@ def actualizar_estado():
         print("No se encontró el expediente.")
 
 
-# ------------------------------------------------------------
-# FUNCIÓN PARA ORDENAR LOS EXPEDIENTES
-# ------------------------------------------------------------
+# ============================================================
+# FUNCION PARA ORDENAR POR PRIORIDAD CON CICLOS FOR
+# Alta primero, luego Media y finalmente Baja.
+# ============================================================
 def ordenar_expedientes():
 
     print("\n==========================================")
@@ -456,23 +555,40 @@ def ordenar_expedientes():
     print("==========================================")
 
     if len(expedientes) == 0:
-
         print("No existen expedientes para ordenar.")
+        return
 
-    else:
+    # Asignamos un numero a cada prioridad para compararlas.
+    for i in range(len(expedientes)):
+        for j in range(i + 1, len(expedientes)):
+            prioridad_i = expedientes[i][11]
+            prioridad_j = expedientes[j][11]
+    
+            if prioridad_i == "Alta":
+                numero_i = 1
+            elif prioridad_i == "Media":
+                numero_i = 2
+            else:
+                numero_i = 3
+    
+            if prioridad_j == "Alta":
+                numero_j = 1
+            elif prioridad_j == "Media":
+                numero_j = 2
+            else:
+                numero_j = 3
+    
+            if numero_i > numero_j:
+                temporal = expedientes[i]
+                expedientes[i] = expedientes[j]
+                expedientes[j] = temporal
 
-        # Utilizamos el método de ordenamiento de Python
-        # para ordenar los códigos de menor a mayor.
-
-        expedientes.sort()
-
-        print("Los expedientes fueron ordenados correctamente.")
-
-        mostrar_expedientes()
+    print("Expedientes ordenados por prioridad.")
+    print("Orden: Alta, Media y Baja.")
 
 
 # ------------------------------------------------------------
-# FUNCIÓN PARA GUARDAR LOS EXPEDIENTES EN UN ARCHIVO
+# FUNCIÓN PARA GUARDAR LOS EXPEDIENTES EN UN ARCHIVO DE TEXTO
 # ------------------------------------------------------------
 def guardar_archivo():
 
@@ -482,132 +598,135 @@ def guardar_archivo():
 
     # Verificamos que existan expedientes
     if len(expedientes) == 0:
-
         print("No existen expedientes para guardar.")
-
-    else:
-
+        return
         # Abrimos un archivo de texto.
         # La letra "w" significa escribir.
-
-        archivo = open("expedientes_sedapal.txt", "w")
-
+    archivo = open("expedientes_sedapal.txt", "w", encoding="utf-8")
         # Recorremos todos los expedientes
-        for expediente in expedientes:
-
-            archivo.write("====================================\n")
-            archivo.write("Código: " + expediente[0] + "\n")
-            archivo.write("DNI: " + expediente[1] + "\n")
-            archivo.write("Ciudadano: " + expediente[2] +" "+ expediente[3] + "\n")
-            archivo.write("Telefono/Celular:" + expediente[4] + "\n")
-            archivo.write("Correo electrónico:" + expediente[5] + "\n")
-            archivo.write("Tipo: " + expediente[6] + "\n")
-            archivo.write("Descripción: " + expediente[7] + "\n")
-            archivo.write("Sede: " + expediente[8] + "\n")
-            archivo.write("Fecha: " + expediente[9] + "\n")
-            archivo.write("Estado: " + expediente[10] + "\n")
+    for expediente in expedientes:
+        archivo.write("====================================\n")
+        archivo.write("Código: " + expediente[0] + "\n")
+        archivo.write("DNI: " + expediente[1] + "\n")
+        archivo.write("Ciudadano: " + expediente[2] +" "+ expediente[3] + "\n")
+        archivo.write("Telefono/Celular:" + expediente[4] + "\n")
+        archivo.write("Correo electrónico:" + expediente[5] + "\n")
+        archivo.write("Tipo: " + expediente[6] + "\n")
+        archivo.write("Descripción: " + expediente[7] + "\n")
+        archivo.write("Sede: " + expediente[8] + "\n")
+        archivo.write("Fecha: " + expediente[9] + "\n")
+        archivo.write("Estado: " + expediente[10] + "\n")
+        archivo.write("Prioridad: " + expediente[11] + "\n")
 
         # Cerramos el archivo
-        archivo.close()
+    archivo.close()
 
-        print("Los expedientes fueron guardados correctamente.")
-        print("Archivo: expedientes_sedapal.txt")
+    print("Los expedientes fueron guardados correctamente.")
+    print("Archivo: expedientes_sedapal.txt")
 
 
-# ------------------------------------------------------------
-# FUNCIÓN PRINCIPAL
-# ------------------------------------------------------------
-def menu():
-
+# ============================================================
+# MENU PARA PERSONA NATURAL
+# ============================================================
+def menu_persona_natural(posicion_usuario):
     opcion = ""
 
-    # El menú se repetirá mientras el usuario
-    # no seleccione la opción de salir.
+    while opcion != "4":
+        print("\n========================================")
+        print("       MENU - PERSONA NATURAL")
+        print("========================================")
+        print("1. Registrar/enviar documento")
+        print("2. Ver mis expedientes")
+        print("3. Buscar mi expediente por codigo")
+        print("4. Cerrar sesion")
 
-    while opcion != "7":
-
-        print("\n")
-        print("==========================================")
-        print("      SEDAPAL - MESA DE PARTES DIGITAL")
-        print("           SEDE SAN JUAN DE LURIGANCHO")
-        print("==========================================")
-        print("1. Registrar expediente")
-        print("2. Mostrar expedientes")
-        print("3. Buscar expediente")
-        print("4. Actualizar estado")
-        print("5. Ordenar expedientes")
-        print("6. Guardar expedientes en archivo")
-        print("7. Salir")
-        print("==========================================")
-
-        opcion = input("Seleccione una opción: ")
-
-        # ----------------------------------------
-        # OPCIÓN 1
-        # ----------------------------------------
+        opcion = input("Seleccione una opcion: ").strip()
 
         if opcion == "1":
+            registrar_expediente(posicion_usuario)
+        elif opcion == "2":
+            mostrar_expedientes(posicion_usuario)
+        elif opcion == "3":
+            buscar_expediente(posicion_usuario)
+        elif opcion == "4":
+            print("Sesion cerrada.")
+        else:
+            print("Opcion incorrecta.")
 
-            registrar_expediente()
 
-        # ----------------------------------------
-        # OPCIÓN 2
-        # ----------------------------------------
+# ============================================================
+# MENU PARA ADMINISTRADOR
+# ============================================================
+def menu_administrador(posicion_usuario):
+    opcion = ""
+
+    while opcion != "7":
+        print("\n========================================")
+        print("         MENU - ADMINISTRADOR")
+        print("========================================")
+        print("1. Registrar expediente")
+        print("2. Mostrar todos los expedientes")
+        print("3. Buscar expediente")
+        print("4. Actualizar estado")
+        print("5. Ordenar por prioridad")
+        print("6. Guardar expedientes en archivo")
+        print("7. Cerrar sesion")
+
+        opcion = input("Seleccione una opcion: ").strip()
+
+        if opcion == "1":
+            registrar_expediente(posicion_usuario)
+        elif opcion == "2":
+            mostrar_expedientes(posicion_usuario)
+        elif opcion == "3":
+            buscar_expediente(posicion_usuario)
+        elif opcion == "4":
+            actualizar_estado()
+        elif opcion == "5":
+            ordenar_expedientes()
+        elif opcion == "6":
+            guardar_archivo()
+        elif opcion == "7":
+            print("Sesion cerrada.")
+        else:
+            print("Opcion incorrecta.")
+
+
+# ============================================================
+# MENU INICIAL DEL SISTEMA
+# ============================================================
+def menu_inicial():
+    opcion = ""
+
+    while opcion != "3":
+        print("\n========================================")
+        print("    SEDAPAL - MESA DE PARTES DIGITAL")
+        print("       SEDE SAN JUAN DE LURIGANCHO")
+        print("========================================")
+        print("1. Iniciar sesion")
+        print("2. Crear nuevo usuario")
+        print("3. Salir")
+
+        opcion = input("Seleccione una opcion: ").strip()
+
+        if opcion == "1":
+            posicion = iniciar_sesion()
+
+            if posicion != -1:
+                if usuarios_perfiles[posicion] == 2:
+                    menu_administrador(posicion)
+                else:
+                    menu_persona_natural(posicion)
 
         elif opcion == "2":
-
-            mostrar_expedientes()
-
-        # ----------------------------------------
-        # OPCIÓN 3
-        # ----------------------------------------
+            registrar_usuario()
 
         elif opcion == "3":
-
-            buscar_expediente()
-
-        # ----------------------------------------
-        # OPCIÓN 4
-        # ----------------------------------------
-
-        elif opcion == "4":
-
-            actualizar_estado()
-
-        # ----------------------------------------
-        # OPCIÓN 5
-        # ----------------------------------------
-
-        elif opcion == "5":
-
-            ordenar_expedientes()
-
-        # ----------------------------------------
-        # OPCIÓN 6
-        # ----------------------------------------
-
-        elif opcion == "6":
-
-            guardar_archivo()
-
-        # ----------------------------------------
-        # OPCIÓN 7
-        # ----------------------------------------
-
-        elif opcion == "7":
-
-            print("\nGracias por utilizar el sistema.")
-            print("SEDAPAL - Mesa de Partes Digital")
-
-        # ----------------------------------------
-        # OPCIÓN INCORRECTA
-        # ----------------------------------------
+            print("Gracias por utilizar el sistema.")
 
         else:
-
-            print("\nOpción incorrecta. Intente nuevamente.")
-
-# ------------------------------------------------------------
+            print("Opcion incorrecta. Intente nuevamente.")
+# ============================================================
 # INICIO DEL PROGRAMA
-# ------------------------------------------------------------
-menu()
+# ============================================================
+menu_inicial()
