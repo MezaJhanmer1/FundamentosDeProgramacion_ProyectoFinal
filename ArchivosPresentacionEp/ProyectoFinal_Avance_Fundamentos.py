@@ -55,6 +55,11 @@ usuarios_correo = ["", ""]
 usuarios_claves = ["admin123", "admin456"]
 usuarios_perfiles = [2, 2]
 
+# Creamos nueva estructura de usuarios
+usuarios = [
+    ["60549429", "Jhanmer", "Meza", "", "", "admin123", 2, 0],
+    ["12345678", "Carlos", "Ramirez", "", "", "admin456", 2, 0]
+]
 
 # ============================================================
 # FUNCION PARA VALIDAR TEXTO CON LETRAS Y ESPACIOS
