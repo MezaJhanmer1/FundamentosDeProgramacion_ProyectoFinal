@@ -55,7 +55,11 @@ usuarios_correo = ["", ""]
 usuarios_claves = ["admin123", "admin456"]
 usuarios_perfiles = [2, 2]
 
-
+#Agregamos una nueva estructura donde se almacenaran los usuarios nuevos
+usuarios = [
+    ["60549429", "Jhanmer", "Meza", "", "", "admin123", 2, 0],
+    ["12345678", "Carlos", "Ramirez", "", "", "admin456", 2, 0]
+]
 # ============================================================
 # FUNCION PARA VALIDAR TEXTO CON LETRAS Y ESPACIOS
 # ============================================================
@@ -330,6 +334,9 @@ def registrar_usuario():
     usuarios_claves.append(clave)
     usuarios_perfiles.append(1)
 
+    # Agregar los nuevos usuario a la nueva estructura creada
+    usuarios.append([dni, nombre, apellidos, telefono, correo, clave, 1, 0])
+
     print("\nUsuario registrado correctamente.")
     print("Tu perfil es: Persona natural.")
     print("Ya puedes iniciar sesion.")
@@ -337,30 +344,29 @@ def registrar_usuario():
 
 # ============================================================
 # FUNCION PARA INICIAR SESION
-# Devuelve la posicion del usuario o -1 si falla.
+# Aca validamos las credenciales del usuario en el inicio de sesion
 # ============================================================
 def iniciar_sesion():
-    print("\n========================================")
-    print("              INICIAR SESION")
-    print("========================================")
+    print("\n--- INICIAR SESION ---")
 
-    dni = input("Ingrese su usuario (DNI): ").strip()
+    dni = input("Ingrese su DNI: ")
     clave = input("Ingrese su contraseña: ")
 
-    for i in range(len(usuarios_dni)):
-        if usuarios_dni[i] == dni:
-            if usuarios_claves[i] == clave:
-                print("\nBienvenido:", usuarios_nombres[i], usuarios_apellidos[i])
-                if usuarios_perfiles[i] == 2:
-                    print("Perfil: Administrador")
-                else:
-                    print("Perfil: Persona natural")
+    for i in range(len(usuarios)):
+
+        if usuarios[i][0] == dni:
+
+            if usuarios[i][5] == clave:
+
+                print("\nBienvenido:", usuarios[i][1], usuarios[i][2])
+
                 return i
+
             else:
-                print("Contraseña incorrecta.")
+                print("\nContraseña incorrecta.")
                 return -1
 
-    print("Usuario no registrado.")
+    print("\nUsuario no encontrado.")
     return -1
 
 # ------------------------------------------------------------
