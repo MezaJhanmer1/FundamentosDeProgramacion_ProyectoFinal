@@ -55,11 +55,6 @@ usuarios_correo = ["", ""]
 usuarios_claves = ["admin123", "admin456"]
 usuarios_perfiles = [2, 2]
 
-# Creamos nueva estructura de usuarios, Para agregar los limites de busqueda y consulta de las personas naturales
-usuarios = [
-    ["60549429", "Jhanmer", "Meza", "", "", "admin123", 2, 0],
-    ["12345678", "Carlos", "Ramirez", "", "", "admin456", 2, 0]
-]
 
 # ============================================================
 # FUNCION PARA VALIDAR TEXTO CON LETRAS Y ESPACIOS
@@ -152,62 +147,111 @@ def validar_fecha(fecha):
     return True
 
 # ============================================================
-# FUNCION PARA VALIDAR CORREO
+# FUNCION PARA VALIDAR CORREO ELECTRONICO
 # ============================================================
 def validar_correo(email):
-    
-    email_limpio = email.strip().lower()        #quita espacios + minusculas
-    caracteres_prohibidos = " ,()[]{}!¡¿?/*;:<>=#$"     # --- FILTRO DE CARACTERES PROHIBIDOS ---
-    
-    for caracter in email_limpio:
-        if caracter in caracteres_prohibidos:
-            return False # Si encuentra un carácter prohibido, el correo es inválido
+    email = email.strip().lower()
 
-    if "@" in email_limpio:
-        partes = email_limpio.split("@")        # corta en 2 partes (usuario + @ + dominio) ["juan.perez", "gmail.com"]
-        dominio = partes[1]                     # pedimos q guarde el 2do elemento [1]
-        
-        if "." in dominio:                      # el DOMINIO tenga un punto (para el .com, .net, etc.)
-            return True
-        
-    return False
+    # Verificar que no este vacio.
+    if email == "":
+        return False
+
+    # Verificar que tenga un solo @.
+    if email.count("@") != 1:
+        return False
+
+    partes = email.split("@")
+    usuario = partes[0]
+    dominio = partes[1]
+
+    # Verificar que usuario y dominio no esten vacios.
+    if usuario == "" or dominio == "":
+        return False
+
+    # No permitir espacios.
+    if " " in email:
+        return False
+
+    # Verificar que el dominio tenga un punto.
+    if "." not in dominio:
+        return False
+
+    # Evitar puntos al inicio o al final del dominio.
+    if dominio.startswith(".") or dominio.endswith("."):
+        return False
+
+    # Verificar que la extension tenga al menos dos caracteres.
+    extension = dominio.split(".")[-1]
+    if len(extension) < 2:
+        return False
+
+    # Verificar caracteres no permitidos.
+    caracteres_prohibidos = " ,()[]{}!¡¿?/*;:<>=#$"
+    for caracter in email:
+        if caracter in caracteres_prohibidos:
+            return False
+
+    return True
+
 
 # ============================================================
 # FUNCION PARA VALIDAR TELEFONO
 # ============================================================
 def validar_telefono(telefono):
-    tel_limpio = telefono.strip()       # Quitamos espacios en blanco por si el usuario los puso
-    
-    if len(tel_limpio) == 0:            # Evitamos validar textos vacíos
+    telefono = telefono.strip()
+
+    # Evitar campos vacios.
+    if telefono == "":
         return False
-    
-    # REGLA 1: Solo debe contener números
-    for caracter in tel_limpio:
-        if caracter not in "0123456789":
-            return False
-        
-    longitud = len(tel_limpio)
-    primer_digito = tel_limpio[0]
-    
-    if primer_digito == "9":            # REGLA 2: Si es un celular (Empieza con 9)
-        if longitud == 9:
-            return True
-        else:
-            return False # Celular incorrecto si no tiene 9 dígitos
-        
-    elif primer_digito == "1":          # REGLA 3: Si es un teléfono fijo de Lima/Callao
-        if longitud == 7:               # En Lima obligatoriamente son 7 dígitos
-            return True
-        else:
+
+    # Verificar que solamente tenga numeros.
+    for numero in telefono:
+        if numero not in "0123456789":
             return False
 
-    elif primer_digito in ["2", "3", "4", "5", "6", "7", "8"]:      # REGLA 3: Si es un teléfono fijo o rural (Empieza entre 2 y 8)
-        if longitud == 6:                          # Acepta 7 dígitos (Lima/Callao) o 6 dígitos (Provincias)
-            return True
-        else:
-            return False                                # Fijo incorrecto si no tiene 6 o 7 dígitos
-            
-    return False                            # Si empieza con 0, 1 o cualquier otro carácter, es inválido
+    longitud = len(telefono)
+    primer_digito = telefono[0]
+
+    # Celular peruano: empieza con 9 y tiene 9 digitos.
+    if primer_digito == "9" and longitud == 9:
+        return True
+
+    # Telefono fijo de Lima y Callao: empieza con 1 y tiene 7 digitos.
+    elif primer_digito == "1" and longitud == 7:
+        return True
+
+    # Telefono fijo de otras regiones: empieza entre 2 y 8 y tiene 6 digitos.
+    elif primer_digito in "2345678" and longitud == 6:
+        return True
+
+    return False
+
+
+# ============================================================
+# FUNCION PARA SOLICITAR UN TELEFONO VALIDO
+# ============================================================
+def solicitar_telefono():
+    telefono = input("Ingrese su telefono/celular: ").strip()
+
+    while validar_telefono(telefono) == False:
+        print("Telefono incorrecto. Verifique la cantidad de digitos.")
+        telefono = input("Ingrese nuevamente su telefono: ").strip()
+
+    return telefono
+
+
+# ============================================================
+# FUNCION PARA SOLICITAR UN CORREO VALIDO
+# ============================================================
+def solicitar_correo():
+    correo = input("Ingrese su correo electronico: ").strip()
+
+    while validar_correo(correo) == False:
+        print("Correo electronico incorrecto.")
+        correo = input("Ingrese nuevamente su correo: ").strip()
+
+    return correo
+
 
 # ============================================================
 # FUNCION PARA SIMULAR LA CONSULTA A RENIEC
@@ -269,15 +313,8 @@ def registrar_usuario():
     print("Nombre encontrado:", nombre)
     print("Apellidos encontrados:", apellidos)
 
-    telefono = input("Ingrese su telefono/celular: ").strip()
-    while validar_telefono(telefono) == False:
-        print("Telefono incorrecto. Revise la cantidad de digitos.")
-        telefono = input("Ingrese su telefono/celular nuevamente: ").strip()
-
-    correo = input("Ingrese su correo: ").strip()
-    while validar_correo(correo) == False:
-        print("Correo incorrecto.")
-        correo = input("Ingrese su correo nuevamente: ").strip()
+    telefono = solicitar_telefono()
+    correo = solicitar_correo()
 
     clave = input("Cree su contraseña: ")
     while clave == "":
@@ -292,9 +329,6 @@ def registrar_usuario():
     usuarios_correo.append(correo)
     usuarios_claves.append(clave)
     usuarios_perfiles.append(1)
-
-    # Agregamos los usuarios a nuestra nueva estructura que es una lista donde se almacenaran los datos para ser mas ordenado
-    usuarios.append([dni, nombre, apellidos, telefono, correo, clave, 1, 0])
 
     print("\nUsuario registrado correctamente.")
     print("Tu perfil es: Persona natural.")
@@ -369,15 +403,8 @@ def registrar_expediente(posicion_usuario):
     print("Nombre encontrado:", nombre)
     print("Apellidos encontrados:", apellidos)
 
-    telefono = input("Ingrese el telefono/celular de contacto: ").strip()
-    while validar_telefono(telefono) == False:
-        print("Telefono incorrecto. Ingrese un numero valido.")
-        telefono = input("Ingrese el telefono/celular nuevamente: ").strip()
-
-    correo = input("Ingrese el correo electronico de contacto: ").strip()
-    while validar_correo(correo) == False:
-        print("Correo electronico incorrecto.")
-        correo = input("Ingrese el correo nuevamente: ").strip()
+    telefono = solicitar_telefono()
+    correo = solicitar_correo()
 
     print("\nSeleccione el tipo de tramite:")
     print("1. Queja y reclamo")
