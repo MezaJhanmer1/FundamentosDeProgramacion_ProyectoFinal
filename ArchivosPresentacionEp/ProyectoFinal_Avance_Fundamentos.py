@@ -55,7 +55,7 @@ usuarios_correo = ["", ""]
 usuarios_claves = ["admin123", "admin456"]
 usuarios_perfiles = [2, 2]
 
-# Creamos nueva estructura de usuarios
+# Creamos nueva estructura de usuarios, Para agregar los limites de busqueda y consulta de las personas naturales
 usuarios = [
     ["60549429", "Jhanmer", "Meza", "", "", "admin123", 2, 0],
     ["12345678", "Carlos", "Ramirez", "", "", "admin456", 2, 0]
@@ -292,6 +292,9 @@ def registrar_usuario():
     usuarios_correo.append(correo)
     usuarios_claves.append(clave)
     usuarios_perfiles.append(1)
+
+    # Agregamos los usuarios a nuestra nueva estructura que es una lista donde se almacenaran los datos para ser mas ordenado
+    usuarios.append([dni, nombre, apellidos, telefono, correo, clave, 1, 0])
 
     print("\nUsuario registrado correctamente.")
     print("Tu perfil es: Persona natural.")
