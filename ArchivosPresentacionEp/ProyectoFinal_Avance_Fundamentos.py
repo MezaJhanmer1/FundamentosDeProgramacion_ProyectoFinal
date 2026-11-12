@@ -13,6 +13,13 @@
 # Por ahora no utilizamos una base de datos.
 expedientes = []
 
+
+# ============================================================
+# CONFIGURACION: LIMITE DE EXPEDIENTES POR USUARIO
+# ============================================================
+LIMITE_EXPEDIENTES_PERSONA_NATURAL = 5     # personas naturales
+LIMITE_EXPEDIENTES_ADMINISTRADOR   = 50    # administradores
+
 # ------------------------------------------------------------
 # LISTAS PARA SIMULAR UNA CONSULTA A RENIEC
 # Estos son datos de prueba, no una consulta oficial.
@@ -283,6 +290,40 @@ def generar_codigo():
         codigo = "SED-0" + str(numero)
 
     return codigo
+
+
+# ============================================================
+# FUNCIONES PARA CONTROLAR EL LIMITE DE EXPEDIENTES
+# ============================================================
+def contar_expedientes_usuario(dni):
+    contador = 0
+    for expediente in expedientes:
+        if expediente[1] == dni:
+            contador += 1
+    return contador
+
+
+def obtener_limite_usuario(posicion_usuario):
+    if usuarios_perfiles[posicion_usuario] == 2:
+        return LIMITE_EXPEDIENTES_ADMINISTRADOR
+    return LIMITE_EXPEDIENTES_PERSONA_NATURAL
+
+
+def puede_registrar_expediente(posicion_usuario):
+    dni_usuario = usuarios_dni[posicion_usuario]
+    limite = obtener_limite_usuario(posicion_usuario)
+    actuales = contar_expedientes_usuario(dni_usuario)
+
+    if actuales >= limite:
+        print("\n========================================")
+        print("        LIMITE ALCANZADO")
+        print("========================================")
+        print("Ya registraste", actuales, "de", limite, "expedientes permitidos.")
+        print("No puedes registrar mas expedientes por ahora.")
+        return False
+
+    print("Expedientes registrados:", actuales, "/", limite)
+    return True
 
 
 # ============================================================
