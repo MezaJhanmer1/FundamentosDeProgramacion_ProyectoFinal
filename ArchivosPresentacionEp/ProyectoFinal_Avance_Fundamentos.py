@@ -33,6 +33,15 @@ reniec_dni = [
     "27272727", "28282828", "29292929", "30303030", "31313131"
 ]
 
+reniec_digitos = [
+    "9", "7", "8", "9", "0",
+    "1", "1", "2", "3", "4",
+    "0", "4", "1", "9", "6",
+    "3", "1", "8", "5", "3",
+    "1", "5", "2", "0", "7",
+    "4", "1", "9", "7", "4"
+]
+
 reniec_nombres = [
     "Jhanmer", "Ana", "Carlos", "Maria", "Luis", "Rosa", "Pedro",
     "Lucia", "Jose", "Carmen", "Miguel", "Elena", "Jorge", "Patricia",
@@ -161,48 +170,25 @@ def validar_fecha(fecha):
 # FUNCION PARA VALIDAR CORREO ELECTRONICO
 # ============================================================
 def validar_correo(email):
-    email = email.strip().lower()
-
-    # Verificar que no este vacio.
-    if email == "":
-        return False
-
-    # Verificar que tenga un solo @.
-    if email.count("@") != 1:
-        return False
-
-    partes = email.split("@")
-    usuario = partes[0]
-    dominio = partes[1]
-
-    # Verificar que usuario y dominio no esten vacios.
-    if usuario == "" or dominio == "":
-        return False
-
-    # No permitir espacios.
-    if " " in email:
-        return False
-
-    # Verificar que el dominio tenga un punto.
-    if "." not in dominio:
-        return False
-
-    # Evitar puntos al inicio o al final del dominio.
-    if dominio.startswith(".") or dominio.endswith("."):
-        return False
-
-    # Verificar que la extension tenga al menos dos caracteres.
-    extension = dominio.split(".")[-1]
-    if len(extension) < 2:
-        return False
-
-    # Verificar caracteres no permitidos.
-    caracteres_prohibidos = " ,()[]{}!¡¿?/*;:<>=#$"
-    for caracter in email:
+    
+    email_limpio = email.strip().lower()        #quita espacios + minusculas
+    caracteres_prohibidos = " ,()[]{}!¡¿?/*;:<>=#$"     # --- FILTRO DE CARACTERES PROHIBIDOS ---
+    
+    for caracter in email_limpio:
         if caracter in caracteres_prohibidos:
-            return False
+            return False # Si encuentra un carácter prohibido, el correo es inválido
 
-    return True
+    if "@" in email_limpio:
+        partes = email_limpio.split("@")        # corta en 2 partes (usuario + @ + dominio) ["juan.perez", "gmail.com"]
+        usuario = partes[0]                     # pedimos q guarde el 1er elemento [0]
+        dominio = partes[1]                     # pedimos q guarde el 2do elemento [1]
+
+        
+        if usuario != "" and dominio == "gmail.com":       # el DOMINIO tenga un punto (para el .com, .net, etc.) y que el dominio sea exactamente gmail.com
+            
+            return True
+        
+    return False
 
 
 # ============================================================
@@ -808,6 +794,42 @@ def menu_inicial():
 
         else:
             print("Opcion incorrecta. Intente nuevamente.")
+
+# ============================================================
+# VERIFICACION DEL DNI CON DIGITO VERIFICADOR
+# ============================================================
+def validar_dni(dni):
+    # Verificamos que el DNI tenga exactamente 8 números.
+    if len(dni) != 8:
+        return False  # Si no tiene 8 caracteres, el DNI es inválido.
+
+    # Recorremos cada carácter del DNI para comprobar que sean números.
+    for caracter in dni:
+        # Verificamos que cada carácter esté entre 0 y 9.
+        if caracter < "0" or caracter > "9":
+            return False  # Si encuentra una letra o símbolo, devuelve falso.
+
+    # Buscamos si el DNI ingresado se encuentra en nuestra lista de prueba.
+    if dni in reniec_dni:
+        # Obtenemos la posición donde se encuentra el DNI en la lista.
+        posicion = reniec_dni.index(dni)
+
+        # Solicitamos al usuario que ingrese el dígito verificador.
+        digito = input("Ingrese digito verificador: ").strip()
+
+        # Comparamos el dígito ingresado con el registrado en nuestra lista.
+        if digito == reniec_digitos[posicion]:
+            print("DNI verificado correctamente.")  # Mostramos el mensaje de verificación exitosa.
+            return True  # Indicamos que el DNI es válido.
+        else:
+            print("Digito verificador incorrecto.")  # Informamos que el dígito no coincide.
+            return False  # Indicamos que la verificación falló.
+
+    # Si el DNI no está en la lista, permitimos continuar.
+    # La búsqueda posterior mostrará el mensaje de DNI no encontrado.
+    return True
+
+
 # ============================================================
 # INICIO DEL PROGRAMA
 # ============================================================
