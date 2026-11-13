@@ -413,7 +413,7 @@ def registrar_expediente(posicion_usuario):
         dni = input("Ingrese nuevamente el DNI: ").strip()
 
     # La persona natural solo puede registrar con su propio DNI.
-    if usuarios_perfiles[posicion_usuario] == 1 and dni != usuarios_dni[posicion_usuario]:
+    if usuarios[posicion_usuario][6] == 1 and dni != usuarios[posicion_usuario][0]:
         print("Por seguridad, solo puedes registrar expedientes con tu propio DNI.")
         return
 
@@ -427,7 +427,7 @@ def registrar_expediente(posicion_usuario):
             print("Error: el DNI debe tener exactamente 8 numeros.")
             dni = input("Ingrese nuevamente el DNI: ").strip()
 
-        if usuarios_perfiles[posicion_usuario] == 1 and dni != usuarios_dni[posicion_usuario]:
+        if usuarios[posicion_usuario][6] == 1 and dni != usuarios[posicion_usuario][0]:
             print("Solo puedes registrar expedientes con tu propio DNI.")
             return
 
@@ -472,7 +472,7 @@ def registrar_expediente(posicion_usuario):
     print("3. Baja")
 
     # Las personas naturales no eligen prioridad alta por su cuenta.
-    if usuarios_perfiles[posicion_usuario] == 1:
+    if usuarios[posicion_usuario][6] == 1:
         prioridad = "Media"
         print("Tu expediente se registrara con prioridad Media.")
     else:
@@ -515,9 +515,7 @@ def mostrar_expedientes(posicion_usuario):
     encontrados = 0
 
     for expediente in expedientes:
-        if usuarios_perfiles[posicion_usuario] == 2 or expediente[1] == usuarios_dni[posicion_usuario]:
-            print("----------------------------------------")
-            print("Codigo:", expediente[0])
+       if usuarios[posicion_usuario][6] == 2 or expediente[1] == usuarios[posicion_usuario][0]:
             print("DNI:", expediente[1])
             print("Ciudadano:", expediente[2], expediente[3])
             print("Telefono:", expediente[4])
@@ -547,7 +545,7 @@ def buscar_expediente(posicion_usuario):
     for expediente in expedientes:
         if expediente[0] == codigo_buscar:
             # La persona natural solo puede consultar sus propios expedientes.
-            if usuarios_perfiles[posicion_usuario] == 1 and expediente[1] != usuarios_dni[posicion_usuario]:
+            if usuarios[posicion_usuario][6] == 1 and expediente[1] != usuarios[posicion_usuario][0]:
                 continue
 
             print("\nExpediente encontrado:")
@@ -781,7 +779,7 @@ def menu_inicial():
             posicion = iniciar_sesion()
 
             if posicion != -1:
-                if usuarios_perfiles[posicion] == 2:
+                if usuarios[posicion][6] == 2:
                     menu_administrador(posicion)
                 else:
                     menu_persona_natural(posicion)
