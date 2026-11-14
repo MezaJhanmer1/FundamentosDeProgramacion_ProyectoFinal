@@ -404,6 +404,10 @@ def registrar_expediente(posicion_usuario):
     print("          REGISTRO DE EXPEDIENTE")
     print("========================================")
 
+     # Verificamos el limite antes de continuar
+    if not puede_registrar_expediente(posicion_usuario):
+        return
+
     codigo = generar_codigo()
     print("Codigo del expediente:", codigo)
 
