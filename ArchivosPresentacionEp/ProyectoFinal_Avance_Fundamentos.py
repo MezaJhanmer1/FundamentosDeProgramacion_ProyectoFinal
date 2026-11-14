@@ -731,6 +731,15 @@ def menu_persona_natural(posicion_usuario):
         print("\n========================================")
         print("       MENU - PERSONA NATURAL")
         print("========================================")
+
+        # Mostramos cuantos expedientes le quedan disponibles
+        usados = contar_expedientes_usuario(usuarios_dni[posicion_usuario])
+        disponibles = LIMITE_EXPEDIENTES_PERSONA_NATURAL - usados
+        if disponibles < 0:
+            disponibles = 0
+        print("Expedientes disponibles:", disponibles,
+              "/", LIMITE_EXPEDIENTES_PERSONA_NATURAL)
+        
         print("1. Registrar/enviar documento")
         print("2. Ver mis expedientes")
         print("3. Buscar mi expediente por codigo")
