@@ -11,6 +11,9 @@
 # ------------------------------------------------------------
 # Esta lista almacenará todos los expedientes registrados, Cada expediente será una lista con sus datos.
 # Por ahora no utilizamos una base de datos.
+from builtins import len
+
+
 expedientes = []
 
 
@@ -333,6 +336,11 @@ def registrar_usuario():
             print("Este DNI ya tiene una cuenta en el sistema.")
             return
 
+    # Verificamos el digito solamente al crear un usuario.
+    if verificar_digito_verificador(dni) == False:
+        print("No se puede completar el registro.")
+        return
+
     # Buscamos el DNI en nuestra lista simulada.
     nombre, apellidos = consultar_reniec(dni)
 
@@ -376,7 +384,16 @@ def registrar_usuario():
 def iniciar_sesion():
     print("\n--- INICIAR SESION ---")
 
-    dni = input("Ingrese su DNI: ")
+    dni = input("Ingrese su DNI: ").strip()
+    
+    if validar_dni(dni) == False:
+        print("DNI incorrecto. Debe tener exactamente 8 numeros.")
+        return -1
+    
+    # Verificamos el digito solamente al iniciar sesion.
+    if verificar_digito_verificador(dni) == False:
+      return -1
+
     clave = input("Ingrese su contraseña: ")
 
     for i in range(len(usuarios)):
@@ -404,44 +421,53 @@ def registrar_expediente(posicion_usuario):
     print("          REGISTRO DE EXPEDIENTE")
     print("========================================")
 
-     # Verificamos el limite antes de continuar
+    # Verificamos el limite antes de continuar
     if not puede_registrar_expediente(posicion_usuario):
         return
 
     codigo = generar_codigo()
     print("Codigo del expediente:", codigo)
 
-    dni = input("Ingrese el DNI del ciudadano: ").strip()
-    while validar_dni(dni) == False:
-        print("Error: el DNI debe tener exactamente 8 numeros.")
-        dni = input("Ingrese nuevamente el DNI: ").strip()
+    # PERFIL PERSONA NATURAL: recuperar automaticamente los datos
+    # guardados cuando se creo la cuenta. No se solicitan nuevamente.
+    if usuarios[posicion_usuario][6] == 1:
+        dni = usuarios[posicion_usuario][0]
+        nombre = usuarios[posicion_usuario][1]
+        apellidos = usuarios[posicion_usuario][2]
+        telefono = usuarios[posicion_usuario][3]
+        correo = usuarios[posicion_usuario][4]
 
-    # La persona natural solo puede registrar con su propio DNI.
-    if usuarios[posicion_usuario][6] == 1 and dni != usuarios[posicion_usuario][0]:
-        print("Por seguridad, solo puedes registrar expedientes con tu propio DNI.")
-        return
+        print("\nDatos recuperados de tu cuenta:")
+        print("DNI:", dni)
+        print("Nombre:", nombre)
+        print("Apellidos:", apellidos)
+        print("Telefono:", telefono)
+        print("Correo:", correo)
 
-    nombre, apellidos = consultar_reniec(dni)
-
-    while nombre == "":
-        print("DNI no encontrado en la lista simulada.")
-        dni = input("Ingrese otro DNI: ").strip()
-
+# PERFIL ADMINISTRADOR: se conserva el registro manual original.
+    else:
+        dni = input("Ingrese el DNI del ciudadano: ").strip()
         while validar_dni(dni) == False:
             print("Error: el DNI debe tener exactamente 8 numeros.")
             dni = input("Ingrese nuevamente el DNI: ").strip()
 
-        if usuarios[posicion_usuario][6] == 1 and dni != usuarios[posicion_usuario][0]:
-            print("Solo puedes registrar expedientes con tu propio DNI.")
-            return
-
         nombre, apellidos = consultar_reniec(dni)
 
-    print("Nombre encontrado:", nombre)
-    print("Apellidos encontrados:", apellidos)
+        while nombre == "":
+            print("DNI no encontrado en la lista simulada.")
+            dni = input("Ingrese otro DNI: ").strip()
 
-    telefono = solicitar_telefono()
-    correo = solicitar_correo()
+            while validar_dni(dni) == False:
+                print("Error: el DNI debe tener exactamente 8 numeros.")
+                dni = input("Ingrese nuevamente el DNI: ").strip()
+
+            nombre, apellidos = consultar_reniec(dni)
+
+        print("Nombre encontrado:", nombre)
+        print("Apellidos encontrados:", apellidos)
+
+        telefono = solicitar_telefono()
+        correo = solicitar_correo()
 
     print("\nSeleccione el tipo de tramite:")
     print("1. Queja y reclamo")
@@ -800,35 +826,20 @@ def menu_inicial():
 # ============================================================
 # VERIFICACION DEL DNI CON DIGITO VERIFICADOR
 # ============================================================
-def validar_dni(dni):
-    # Verificamos que el DNI tenga exactamente 8 números.
-    if len(dni) != 8:
-        return False  # Si no tiene 8 caracteres, el DNI es inválido.
-
-    # Recorremos cada carácter del DNI para comprobar que sean números.
-    for caracter in dni:
-        # Verificamos que cada carácter esté entre 0 y 9.
-        if caracter < "0" or caracter > "9":
-            return False  # Si encuentra una letra o símbolo, devuelve falso.
-
-    # Buscamos si el DNI ingresado se encuentra en nuestra lista de prueba.
+def verificar_digito_verificador(dni):
+    # Si el DNI esta en nuestra lista simulada, comprobamos su digito.
     if dni in reniec_dni:
-        # Obtenemos la posición donde se encuentra el DNI en la lista.
         posicion = reniec_dni.index(dni)
-
-        # Solicitamos al usuario que ingrese el dígito verificador.
         digito = input("Ingrese digito verificador: ").strip()
 
-        # Comparamos el dígito ingresado con el registrado en nuestra lista.
         if digito == reniec_digitos[posicion]:
-            print("DNI verificado correctamente.")  # Mostramos el mensaje de verificación exitosa.
-            return True  # Indicamos que el DNI es válido.
+            print("DNI verificado correctamente.")
+            return True
         else:
-            print("Digito verificador incorrecto.")  # Informamos que el dígito no coincide.
-            return False  # Indicamos que la verificación falló.
+            print("Digito verificador incorrecto.")
+            return False
 
-    # Si el DNI no está en la lista, permitimos continuar.
-    # La búsqueda posterior mostrará el mensaje de DNI no encontrado.
+    # Si no esta en la lista simulada, se deja continuar.
     return True
 
 
