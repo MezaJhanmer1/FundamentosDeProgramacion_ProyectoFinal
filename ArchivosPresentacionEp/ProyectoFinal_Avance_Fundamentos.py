@@ -569,14 +569,40 @@ def buscar_expediente(posicion_usuario):
     print("\n==========================================")
     print("        BUSCAR EXPEDIENTE")
     print("==========================================")
-    codigo_buscar = input("Ingrese el código del expediente: ").strip()
-    encontrado = False
+    print("1. Buscar por DNI")
+    print("2. Buscar por codigo")
 
+    # El usuario elige como desea realizar la busqueda.
+    opcion = input("Seleccione una opcion: ").strip()
+    
+    # Comprobamos que la opcion ingresada sea correcta.
+    while opcion != "1" and opcion != "2":
+            print("Opcion incorrecta.")
+            opcion = input("Seleccione una opcion: ").strip()
+    
+    # Solicitamos el DNI o el codigo, segun la opcion elegida.
+    if opcion == "1":
+            dato_buscar = input("Ingrese el DNI: ").strip()
+    else:
+            dato_buscar = input("Ingrese el codigo del expediente: ").strip()
+    
+    # Esta variable indica si encontramos algun expediente.
+    encontrado = False
+    
+    # Recorremos todos los expedientes registrados.
     for expediente in expedientes:
-        if expediente[0] == codigo_buscar:
-            # La persona natural solo puede consultar sus propios expedientes.
-            if usuarios[posicion_usuario][6] == 1 and expediente[1] != usuarios[posicion_usuario][0]:
-                continue
+    
+            # Si eligio DNI, comparamos con el DNI del expediente.
+            if opcion == "1":
+                coincide = expediente[1] == dato_buscar
+            else:
+                # Si eligio codigo, comparamos con el codigo del expediente.
+                coincide = expediente[0] == dato_buscar
+    
+            if coincide:
+                # La persona natural solo puede consultar sus propios expedientes.
+                if usuarios[posicion_usuario][6] == 1 and expediente[1] != usuarios[posicion_usuario][0]:
+                    continue
 
             print("\nExpediente encontrado:")
             print("------------------------------------------")
