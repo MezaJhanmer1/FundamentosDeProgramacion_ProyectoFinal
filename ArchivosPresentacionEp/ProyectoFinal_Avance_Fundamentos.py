@@ -1,3 +1,4 @@
+from builtins import print
 import json
 import os
 
@@ -579,17 +580,59 @@ def iniciar_sesion():
         if verificar_digito_verificador(dni) == False:
             return -1
 
+        # Verifica si el usuario tiene el perfil de Persona Natural (1).
+    if usuarios[posicion][6] == 1:
+
+        # Inicializa el contador de intentos en cero.
+        intentos = 0
+
+        # Permite ingresar la contraseña mientras no supere los 3 intentos.
+        while intentos < 3:
+
+            # Solicita la contraseña al usuario.
+            clave = input("Ingrese su contraseña: ")
+
+            # Comprueba si la contraseña ingresada es correcta.
+            if usuarios[posicion][5] == clave:
+
+                # Muestra el mensaje de bienvenida y el perfil del usuario.
+                print("\nBienvenido:", usuarios[posicion][1], usuarios[posicion][2])
+                print("Perfil: Persona natural")
+
+                # Devuelve la posición del usuario y finaliza el inicio de sesión.
+                return posicion
+
+            # Aumenta en uno el contador cuando la contraseña es incorrecta.
+            intentos += 1
+
+            # Si todavía quedan intentos, informa cuántos están disponibles.
+            if intentos < 3:
+                print("Contraseña incorrecta. Intentos restantes:", 3 - intentos)
+
+        # Informa que se agotaron los tres intentos permitidos.
+        print("\nMuchos intentos. Vuelve a intentar.")
+
+        # Finaliza el inicio de sesión sin permitir el acceso.
+        return -1
+
+    # Si el usuario es administrador (perfil 2), solicita su contraseña.
+    # Mantiene la validación original de un solo intento.
     clave = input("Ingrese su contraseña: ")
 
+    # Comprueba si la contraseña del administrador es correcta.
     if usuarios[posicion][5] == clave:
+
+        # Muestra el mensaje de bienvenida y el perfil de administrador.
         print("\nBienvenido:", usuarios[posicion][1], usuarios[posicion][2])
-        if usuarios[posicion][6] == 2:
-            print("Perfil: Administrador")
-        else:
-            print("Perfil: Persona natural")
+        print("Perfil: Administrador")
+
+        # Devuelve la posición del administrador y permite continuar.
         return posicion
 
+    # Si la contraseña es incorrecta, muestra un mensaje de error.
     print("\nContraseña incorrecta.")
+
+    # Finaliza el inicio de sesión sin permitir el acceso.
     return -1
 
 
@@ -729,7 +772,7 @@ def esperar_continuar():
 # ------------------------------------------------------------
 # FUNCION PARA MOSTRAR EXPEDIENTES
 # ------------------------------------------------------------
-def mostrar_expedientes(posicion_usuario):
+def mostrar_expedientes(posicion_usuario, estado=None):
     print("\n========================================")
     print("             EXPEDIENTES")
     print("========================================")
@@ -739,9 +782,14 @@ def mostrar_expedientes(posicion_usuario):
     dni_usuario = usuarios[posicion_usuario][0]
 
     for expediente in expedientes:
-        es_propietario = expediente[1] == dni_usuario
+        es_propietario = expediente[1].strip() == dni_usuario
+        estado_expediente = expediente[10].strip().lower()
 
-        if es_administrador or es_propietario:
+        if (es_administrador or es_propietario) and (
+            estado is None
+            or (estado == "activo" and estado_expediente in ["pendiente", "en proceso"])
+            or  estado == "historial"
+        ): 
             print("----------------------------------------")
             print("Codigo:", expediente[0])
             print("DNI:", expediente[1])
@@ -972,20 +1020,27 @@ def menu_persona_natural(posicion_usuario):
 
         print("Expedientes disponibles:", disponibles, "/", LIMITE_EXPEDIENTES_PERSONA_NATURAL)
         print("1. Registrar/enviar documento")
-        print("2. Ver mis expedientes")
-        print("3. Buscar mi expediente por codigo o DNI")
+        print("2. Ver mis expedientes activos")
+        print("3. Historial de expedientes")
         print("4. Cerrar sesion")
 
         opcion = input("Seleccione una opcion: ").strip()
 
+        # Ejecutamos la opcion seleccionada.
         if opcion == "1":
             registrar_expediente(posicion_usuario)
+
         elif opcion == "2":
-            mostrar_expedientes(posicion_usuario)
+            # Muestra expedientes pendientes y en proceso.
+            mostrar_expedientes(posicion_usuario, "activo")
+
         elif opcion == "3":
-            buscar_expediente(posicion_usuario)
+            # Muestra todos los expedientes registrados del usuario.
+            mostrar_expedientes(posicion_usuario, "historial")
+
         elif opcion == "4":
             print("Sesion cerrada.")
+
         else:
             print("Opcion incorrecta.")
 
