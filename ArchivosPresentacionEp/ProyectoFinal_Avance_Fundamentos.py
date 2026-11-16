@@ -141,19 +141,7 @@ def buscar_registro_dni(dni):
         if registro["dni"] == dni:
             return registro
     return None
-
-# ------------------------------------------------------------
-# LISTAS PARA LOS USUARIOS DEL SISTEMA (LISTAS PARALELAS)
-# Perfil 1 = Persona natural
-# Perfil 2 = Administrador
-# ------------------------------------------------------------
-usuarios_dni = ["60549429", "12345678"]
-usuarios_nombres = ["Jhanmer", "Carlos"]
-usuarios_apellidos = ["Meza", "Ramirez"]
-usuarios_telefono = ["", ""]
-usuarios_correo = ["", ""]
-usuarios_claves = ["admin123", "admin456"]
-usuarios_perfiles = [2, 2]
+1
 
 # Estructura de usuarios: DNI, nombres, apellidos, telefono,
 # correo, clave, perfil y contador reservado.
@@ -465,15 +453,21 @@ def contar_expedientes_usuario(dni):
 
 
 def obtener_limite_usuario(posicion_usuario):
-    if usuarios_perfiles[posicion_usuario] == 2:
+    # Verificamos si el usuario es administrador.
+    if usuarios[posicion_usuario][6] == 2:
         return LIMITE_EXPEDIENTES_ADMINISTRADOR
 
     return LIMITE_EXPEDIENTES_PERSONA_NATURAL
 
 
 def puede_registrar_expediente(posicion_usuario):
-    dni_usuario = usuarios_dni[posicion_usuario]
+    # Obtenemos el DNI del usuario que inició sesión.
+    dni_usuario = usuarios[posicion_usuario][0]
+
+    # Obtenemos el límite según su perfil.
     limite = obtener_limite_usuario(posicion_usuario)
+
+    # Contamos sus expedientes registrados.
     actuales = contar_expedientes_usuario(dni_usuario)
 
     if actuales >= limite:
@@ -486,6 +480,8 @@ def puede_registrar_expediente(posicion_usuario):
 
     print("Expedientes registrados:", actuales, "/", limite)
     return True
+
+
 
 
 # ============================================================
@@ -503,21 +499,17 @@ def registrar_usuario():
         print("El DNI debe tener exactamente 8 numeros.")
         dni = input("Ingrese su DNI nuevamente: ").strip()
 
-    if dni in usuarios_dni:
-        print("Este DNI ya tiene una cuenta en el sistema.")
-        return
+    # Verificamos si el DNI ya existe en la lista de usuarios.
+    for i in range(len(usuarios)):
+        if usuarios[i][0] == dni:
+            print("Este DNI ya tiene una cuenta en el sistema.")
+            return
 
-    # El DNI debe existir en el JSON antes de crear una cuenta.
+    # Buscamos el DNI en nuestra lista simulada de RENIEC.
     nombre, apellidos = consultar_reniec(dni)
 
     if nombre == "":
-        print("DNI no encontrado en SEDAPAL_base_DNI.json.")
-        print("Solicite al administrador que agregue el registro de prueba.")
-        print("No se puede completar el registro.")
-        return
-
-    # Verificamos el numero registrado en el JSON.
-    if verificar_digito_verificador(dni) == False:
+        print("DNI no encontrado en la lista simulada.")
         print("No se puede completar el registro.")
         return
 
@@ -528,20 +520,14 @@ def registrar_usuario():
     correo = solicitar_correo()
 
     clave = input("Cree su contraseña: ")
+
     while clave == "":
         print("La contraseña no puede estar vacia.")
         clave = input("Cree su contraseña: ")
 
-    # Guardamos los datos en las listas paralelas.
-    usuarios_dni.append(dni)
-    usuarios_nombres.append(nombre)
-    usuarios_apellidos.append(apellidos)
-    usuarios_telefono.append(telefono)
-    usuarios_correo.append(correo)
-    usuarios_claves.append(clave)
-    usuarios_perfiles.append(1)
-
-    # Guardamos tambien el usuario en la estructura principal.
+    # Guardamos todos los datos del usuario en una sola lista.
+    # El perfil 1 corresponde a persona natural.
+    # El contador de consultas comienza en 0.
     usuarios.append([dni, nombre, apellidos, telefono, correo, clave, 1, 0])
 
     print("\nUsuario registrado correctamente.")
@@ -1013,7 +999,7 @@ def menu_persona_natural(posicion_usuario):
         print("       MENU - PERSONA NATURAL")
         print("========================================")
 
-        usados = contar_expedientes_usuario(usuarios_dni[posicion_usuario])
+        usados = contar_expedientes_usuario(usuarios[posicion_usuario][0])
         disponibles = LIMITE_EXPEDIENTES_PERSONA_NATURAL - usados
         if disponibles < 0:
             disponibles = 0
