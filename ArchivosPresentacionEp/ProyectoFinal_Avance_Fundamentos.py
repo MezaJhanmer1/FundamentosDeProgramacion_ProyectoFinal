@@ -59,7 +59,8 @@ expedientes = cargar_expedientes()
 # ============================================================
 LIMITE_EXPEDIENTES_PERSONA_NATURAL = 5
 LIMITE_EXPEDIENTES_ADMINISTRADOR = 50
-
+# Limite de consultas para personas naturales
+LIMITE_CONSULTAS_PERSONA_NATURAL = 3
 # ------------------------------------------------------------
 # ARCHIVO JSON PARA SIMULAR UNA CONSULTA A RENIEC
 # Los registros DNI se mantienen en SEDAPAL_base_DNI.json.
@@ -755,13 +756,50 @@ def esperar_continuar():
     input("\nPresione ENTER para volver al menu...")
 
 
+# ============================================================
+# FUNCION PARA CONTROLAR EL LIMITE DE CONSULTAS
+# ============================================================
+def puede_consultar(posicion_usuario):
+
+    # Verificamos si es administrador.
+    # Los administradores no tienen limite de consultas.
+    if usuarios[posicion_usuario][6] == 2:
+        return True
+
+    # Obtenemos las consultas utilizadas.
+    consultas = usuarios[posicion_usuario][7]
+
+    # Verificamos si ya alcanzo el limite.
+    if consultas >= LIMITE_CONSULTAS_PERSONA_NATURAL:
+        print("\n========================================")
+        print("       LIMITE DE CONSULTAS ALCANZADO")
+        print("========================================")
+        print("Ya utilizaste tus 3 consultas permitidas.")
+        return False
+
+    # Sumamos una consulta utilizada.
+    usuarios[posicion_usuario][7] += 1
+
+    # Mostramos las consultas disponibles.
+    disponibles = LIMITE_CONSULTAS_PERSONA_NATURAL - usuarios[posicion_usuario][7]
+
+    print("Consultas disponibles:", disponibles)
+
+    return True
+
 # ------------------------------------------------------------
 # FUNCION PARA MOSTRAR EXPEDIENTES
 # ------------------------------------------------------------
 def mostrar_expedientes(posicion_usuario, estado=None):
+
+    # Verificamos si el usuario puede realizar una consulta.
+    if puede_consultar(posicion_usuario) == False:
+        return
+
     print("\n========================================")
     print("             EXPEDIENTES")
     print("========================================")
+
 
     encontrados = 0
     es_administrador = usuarios[posicion_usuario][6] == 2
