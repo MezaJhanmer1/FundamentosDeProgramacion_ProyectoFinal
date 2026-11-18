@@ -846,6 +846,92 @@ def mostrar_expedientes(posicion_usuario, estado=None):
     esperar_continuar()
 
 
+
+# ============================================================
+# FUNCION PARA GENERAR REPORTE ESTADISTICO DE EXPEDIENTES
+# ============================================================
+def generar_reporte_estadistico():
+    print("\n==========================================")
+    print("       REPORTE ESTADISTICO")
+    print("       MESA DE PARTES DIGITAL")
+    print("==========================================")
+
+    # Verificamos si existen expedientes registrados.
+    if len(expedientes) == 0:
+        print("No existen expedientes para generar el reporte.")
+        esperar_continuar()
+        return
+
+    # Contadores generales.
+    total = len(expedientes)
+
+    # Contadores por estado.
+    pendientes = 0
+    en_proceso = 0
+    atendidos = 0
+
+    # Contadores por prioridad.
+    prioridad_alta = 0
+    prioridad_media = 0
+    prioridad_baja = 0
+
+    # Contadores por tipo de tramite.
+    quejas = 0
+    solicitudes = 0
+    consultas = 0
+
+    # Recorremos todos los expedientes registrados.
+    for expediente in expedientes:
+
+        # Contamos segun el estado del expediente.
+        if expediente[10] == "Pendiente":
+            pendientes += 1
+        elif expediente[10] == "En proceso":
+            en_proceso += 1
+        elif expediente[10] == "Atendido":
+            atendidos += 1
+
+        # Contamos segun la prioridad.
+        if expediente[11] == "Alta":
+            prioridad_alta += 1
+        elif expediente[11] == "Media":
+            prioridad_media += 1
+        elif expediente[11] == "Baja":
+            prioridad_baja += 1
+
+        # Contamos segun el tipo de tramite.
+        if expediente[6] == "Queja y reclamo":
+            quejas += 1
+        elif expediente[6] == "Solicitud":
+            solicitudes += 1
+        elif expediente[6] == "Consulta":
+            consultas += 1
+
+    # Mostramos los resultados del reporte.
+    print("\nTOTAL DE EXPEDIENTES:", total)
+
+    print("\n--- EXPEDIENTES POR ESTADO ---")
+    print("Pendientes:", pendientes)
+    print("En proceso:", en_proceso)
+    print("Atendidos:", atendidos)
+
+    print("\n--- EXPEDIENTES POR PRIORIDAD ---")
+    print("Alta:", prioridad_alta)
+    print("Media:", prioridad_media)
+    print("Baja:", prioridad_baja)
+
+    print("\n--- EXPEDIENTES POR TIPO DE TRAMITE ---")
+    print("Quejas y reclamos:", quejas)
+    print("Solicitudes:", solicitudes)
+    print("Consultas:", consultas)
+
+    print("\n==========================================")
+    print("       FIN DEL REPORTE ESTADISTICO")
+    print("==========================================")
+
+    esperar_continuar()
+
+
 # ------------------------------------------------------------
 # FUNCION PARA BUSCAR UN EXPEDIENTE
 # ------------------------------------------------------------
