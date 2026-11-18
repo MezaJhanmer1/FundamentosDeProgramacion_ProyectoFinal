@@ -1,6 +1,7 @@
 from builtins import print
 import json
 import os
+from datetime import datetime
 
 # ============================================================
 # SISTEMA DE MESA DE PARTES DIGITAL - SEDAPAL SJL v 0.1.5
@@ -256,6 +257,23 @@ def validar_fecha_emision(fecha):
 
     return 1 <= dia <= maximo_dias
 
+# ============================================================
+# HELPERS DE FECHAS PARA LA REGLA DE LOS 10 DIAS 
+# ============================================================
+def dias_desde(fecha_texto):
+    try:
+        fecha = datetime.strptime(fecha_texto, "%d/%m/%Y")
+        return (datetime.now() - fecha).days
+    except (ValueError, TypeError):
+        return None
+
+
+def extraer_fecha_cita(respuesta_cita):
+    if not respuesta_cita or not respuesta_cita.startswith("Fecha: "):
+        return None
+    resto = respuesta_cita[len("Fecha: "):]
+    fecha = resto.split("|")[0].strip()
+    return fecha if fecha != "" else None
 
 # ============================================================
 # FUNCION PARA VALIDAR CORREO ELECTRONICO
