@@ -32,8 +32,12 @@ def cargar_expedientes():
             raise ValueError("El contenido principal debe ser una lista.")
 
         for expediente in datos:
-            if not isinstance(expediente, list) or len(expediente) != 12:
-                raise ValueError("Cada expediente debe tener exactamente 12 campos.")
+            # Compatibilidad con expedientes de 12 campos agregando el campo 13 (respuesta_cita).
+            if isinstance(expediente, list) and len(expediente) == 12:
+                expediente.append("")
+
+            if not isinstance(expediente, list) or len(expediente) != 13:
+                raise ValueError("Cada expediente debe tener exactamente 13 campos.")
             if not all(isinstance(campo, str) for campo in expediente):
                 raise ValueError("Todos los campos del expediente deben ser texto.")
 
@@ -728,10 +732,11 @@ def registrar_expediente(posicion_usuario):
             prioridad = "Baja"
 
     estado = "Pendiente"
+    respuesta_cita = ""
 
     expediente = [
         codigo, dni, nombre, apellidos, telefono, correo,
-        tipo, descripcion, "SJL", fecha, estado, prioridad
+        tipo, descripcion, "SJL", fecha, estado, prioridad, respuesta_cita
     ]
 
     expedientes.append(expediente)
@@ -859,7 +864,7 @@ def buscar_expediente(posicion_usuario):
             esperar_continuar()
             return
     else:
-        dato_buscar = input("Ingrese el codigo del expediente: ").strip()
+        dato_buscar = input("Ingrese el codigo del expediente: ").strip().upper()
 
     encontrado = False
     es_administrador = usuarios[posicion_usuario][6] == 2
@@ -901,13 +906,105 @@ def buscar_expediente(posicion_usuario):
 
 
 # ------------------------------------------------------------
+# FUNCION PARA REGISTRAR RESPUESTA POR CORREO DE CITA (SOLO ADMINISTRADOR)
+# ------------------------------------------------------------
+def registrar_respuesta_cita():
+    print("\n==========================================")
+    print("REGISTRAR RESPUESTA POR CORREO DE CITA")
+    print("==========================================")
+
+    if len(expedientes) == 0:
+        print("No existen expedientes registrados en el sistema.")
+        esperar_continuar()
+        return
+
+    codigo_buscar = input("Ingrese el codigo del expediente (ej. SED-0001): ").strip().upper()
+    expediente_encontrado = None
+
+    for expediente in expedientes:
+        if expediente[0].upper() == codigo_buscar:
+            expediente_encontrado = expediente
+            break
+
+    # Validacion de expediente: verificar que exista antes de pedir datos de la cita.
+    if expediente_encontrado is None:
+        print("Error: El codigo de expediente " + codigo_buscar + " no existe.")
+        esperar_continuar()
+        return
+
+    print("\nExpediente encontrado:")
+    print("Ciudadano:", expediente_encontrado[2], expediente_encontrado[3])
+    print("Correo destino:", expediente_encontrado[5])
+    print("Tramite:", expediente_encontrado[6], "-", expediente_encontrado[7])
+    print("Estado actual:", expediente_encontrado[10])
+
+    # Datos obligatorios: fecha DD/MM/AAAA desde 2026
+    fecha_cita = input("\nIngrese la fecha de la cita (DD/MM/AAAA): ").strip()
+    while validar_fecha(fecha_cita) == False:
+        print("Fecha invalida. Debe tener formato DD/MM/AAAA y corresponder al año 2026 en adelante.")
+        fecha_cita = input("Ingrese nuevamente la fecha de la cita (DD/MM/AAAA): ").strip()
+
+    # Datos obligatorios: mensaje no vacio
+    mensaje_cita = input("Ingrese el mensaje o detalle de la cita: ").strip()
+    while mensaje_cita == "":
+        print("Error: El mensaje de la cita no puede estar vacio.")
+        mensaje_cita = input("Ingrese el mensaje o detalle de la cita: ").strip()
+
+    # Seleccion de actualizacion de estado
+    print("\nSeleccione el nuevo estado del tramite:")
+    print("1. En proceso")
+    print("2. Atendido")
+    opcion_estado = input("Seleccione una opcion: ").strip()
+    while opcion_estado not in ["1", "2"]:
+        print("Opcion incorrecta. Elija 1 o 2.")
+        opcion_estado = input("Seleccione una opcion: ").strip()
+
+    nuevo_estado = "En proceso" if opcion_estado == "1" else "Atendido"
+
+    # Confirmacion de envio y guardado
+    print("\n¿Desea confirmar el registro y simular el envio por correo?")
+    confirmar = input("Escriba S para confirmar o N para cancelar: ").strip().upper()
+    while confirmar not in ["S", "N"]:
+        confirmar = input("Opcion invalida. Escriba S o N: ").strip().upper()
+
+    if confirmar == "N":
+        print("Operacion cancelada. No se realizaron cambios.")
+        esperar_continuar()
+        return
+
+    # Actualizamos el expediente en memoria
+    detalle_completo = "Fecha: " + fecha_cita + " | Mensaje: " + mensaje_cita
+    expediente_encontrado[10] = nuevo_estado
+    expediente_encontrado[12] = detalle_completo
+
+    # Persistencia en JSON
+    try:
+        guardar_expedientes_json()
+    except OSError as error:
+        print("Advertencia: No se pudo guardar en SEDAPAL_expedientes.json:", error)
+
+    # Simulacion de notificacion por correo electronico
+    print("\n==========================================")
+    print("NOTIFICACION DE CORREO ENVIADA")
+    print("==========================================")
+    print("Para:", expediente_encontrado[5])
+    print("Asunto: Citacion de Tramite SEDAPAL SJL -", expediente_encontrado[0])
+    print("Estimado(a):", expediente_encontrado[2], expediente_encontrado[3])
+    print("Fecha de cita programada:", fecha_cita)
+    print("Detalle:", mensaje_cita)
+    print("Nuevo estado del tramite:", nuevo_estado)
+    print("==========================================")
+    print("Registro guardado correctamente en SEDAPAL_expedientes.json.")
+    esperar_continuar()
+
+# ------------------------------------------------------------
 # FUNCION PARA ACTUALIZAR EL ESTADO (SOLO ADMINISTRADOR)
 # ------------------------------------------------------------
 def actualizar_estado():
     print("\n==========================================")
     print("       ACTUALIZAR ESTADO")
     print("==========================================")
-    codigo_buscar = input("Ingrese el codigo del expediente: ").strip()
+    codigo_buscar = input("Ingrese el codigo del expediente: ").strip().upper()
 
     for expediente in expedientes:
         if expediente[0] == codigo_buscar:
@@ -1016,6 +1113,8 @@ def guardar_archivo():
                 archivo.write("Fecha: " + expediente[9] + "\n")
                 archivo.write("Estado: " + expediente[10] + "\n")
                 archivo.write("Prioridad: " + expediente[11] + "\n")
+                cita_texto = expediente[12] if expediente[12] != "" else "Sin cita programada"
+                archivo.write("Respuesta de cita: " + cita_texto + "\n")
 
     except OSError as error:
         print("No se pudieron guardar los expedientes:", error)
@@ -1075,7 +1174,7 @@ def menu_persona_natural(posicion_usuario):
 def menu_administrador(posicion_usuario):
     opcion = ""
 
-    while opcion != "8":
+    while opcion != "9":
         print("\n========================================")
         print("         MENU - ADMINISTRADOR")
         print("========================================")
@@ -1083,10 +1182,11 @@ def menu_administrador(posicion_usuario):
         print("2. Mostrar todos los expedientes")
         print("3. Buscar expediente")
         print("4. Actualizar estado")
-        print("5. Ordenar por prioridad")
-        print("6. Guardar expedientes en archivo")
-        print("7. Agregar DNI a base JSON")
-        print("8. Cerrar sesion")
+        print("5. Registrar respuesta por correo de cita")
+        print("6. Ordenar por prioridad")
+        print("7. Guardar expedientes en archivo")
+        print("8. Agregar DNI a base JSON")
+        print("9. Cerrar sesion")
 
         opcion = input("Seleccione una opcion: ").strip()
 
