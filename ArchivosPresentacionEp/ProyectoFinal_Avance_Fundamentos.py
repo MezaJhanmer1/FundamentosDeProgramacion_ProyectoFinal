@@ -1268,7 +1268,7 @@ def menu_persona_natural(posicion_usuario):
 def menu_administrador(posicion_usuario):
     opcion = ""
 
-    while opcion != "9":
+    while opcion != "10":
         print("\n========================================")
         print("         MENU - ADMINISTRADOR")
         print("========================================")
@@ -1280,7 +1280,8 @@ def menu_administrador(posicion_usuario):
         print("6. Ordenar por prioridad")
         print("7. Guardar expedientes en archivo")
         print("8. Agregar DNI a base JSON")
-        print("9. Cerrar sesion")
+        print("9. Generar reporte estadistico")
+        print("10. Cerrar sesion")
 
         opcion = input("Seleccione una opcion: ").strip()
 
@@ -1301,6 +1302,8 @@ def menu_administrador(posicion_usuario):
         elif opcion == "8":
             registrar_dni_simulado()
         elif opcion == "9":
+            generar_reporte_estadistico()
+        elif opcion == "10":
             print("Sesion cerrada.")
         else:
             print("Opcion incorrecta.")
