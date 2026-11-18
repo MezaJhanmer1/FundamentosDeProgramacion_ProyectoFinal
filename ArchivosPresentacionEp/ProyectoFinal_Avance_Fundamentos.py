@@ -831,6 +831,10 @@ def mostrar_expedientes(posicion_usuario, estado=None):
             print("Fecha:", expediente[9])
             print("Estado:", expediente[10])
             print("Prioridad:", expediente[11])
+            if expediente[12] != "":
+                print("Respuesta de cita:", expediente[12])
+            else:
+                print("Respuesta de cita: Sin cita programada")
             encontrados += 1
 
     if encontrados == 0:
@@ -894,6 +898,10 @@ def buscar_expediente(posicion_usuario):
             print("Fecha:", expediente[9])
             print("Estado:", expediente[10])
             print("Prioridad:", expediente[11])
+            if expediente[12] != "":
+                print("Respuesta de cita:", expediente[12])
+            else:
+                print("Respuesta de cita: Sin cita programada")
             encontrado = True
 
     if encontrado == False:
@@ -1199,12 +1207,14 @@ def menu_administrador(posicion_usuario):
         elif opcion == "4":
             actualizar_estado()
         elif opcion == "5":
-            ordenar_expedientes()
+            registrar_respuesta_cita()
         elif opcion == "6":
-            guardar_archivo()
+            ordenar_expedientes()
         elif opcion == "7":
-            registrar_dni_simulado()
+            guardar_archivo()
         elif opcion == "8":
+            registrar_dni_simulado()
+        elif opcion == "9":
             print("Sesion cerrada.")
         else:
             print("Opcion incorrecta.")
