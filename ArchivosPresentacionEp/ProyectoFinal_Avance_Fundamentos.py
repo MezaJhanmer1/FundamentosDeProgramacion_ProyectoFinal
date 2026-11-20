@@ -1,4 +1,4 @@
-from builtins import print
+from builtins import print, range
 import json
 import os
 from datetime import datetime
@@ -857,6 +857,64 @@ def guardar_archivo():
         print("Los expedientes fueron guardados en expedientes_sedapal.txt y JSON.")
     except OSError as error:
         print("No se pudieron guardar los expedientes:", error)
+
+def actualizar_datos_usuario(posicion_usuario):
+    """Permite actualizar telefono, correo y contraseña del usuario."""
+    usuario = usuarios[posicion_usuario]
+
+    print("\n========================================")
+    print("   ACTUALIZAR DATOS DE MI CUENTA")
+    print("========================================")
+
+   # Pedimos la contraseña actual.
+    clave = input("Ingrese su contraseña actual: ")
+   
+   # Comprobamos que la contraseña sea correcta.
+    if clave != usuario[5]:
+           print("Contraseña incorrecta.")
+           esperar_continuar()
+           return
+   
+    # Pedimos el nuevo telefono.
+    telefono = input("Nuevo telefono (ENTER para mantener el actual): ").strip()
+   
+    # Si escribio un telefono, revisamos que sea valido.
+    if telefono != "":
+        while validar_telefono(telefono) == False:
+            print("Telefono incorrecto.")
+            telefono = input("Ingrese nuevamente el telefono: ").strip()
+        usuario[3] = telefono
+   
+    # Pedimos el nuevo correo.
+    correo = input("Nuevo correo (ENTER para mantener el actual): ").strip()
+   
+    # Si escribio un correo, revisamos que sea valido.
+    if correo != "":
+        while validar_correo(correo) == False:
+            print("Correo incorrecto. Use @gmail.com.")
+            correo = input("Ingrese nuevamente el correo: ").strip()
+        usuario[4] = correo
+   
+    # Preguntamos si desea cambiar su contraseña.
+    cambiar = input("¿Desea cambiar su contraseña? (S/N): ").strip().upper()
+   
+    while cambiar != "S" and cambiar != "N":
+        cambiar = input("Ingrese S o N: ").strip().upper()
+   
+    # Si responde S, solicitamos la nueva contraseña.
+    if cambiar == "S":
+        nueva = input("Nueva contraseña: ")
+   
+        while nueva == "":
+            print("La contraseña no puede estar vacia.")
+            nueva = input("Nueva contraseña: ")
+   
+        # Pedimos confirmar la contraseña.
+        confirmar = input("Repita la nueva contraseña: ")
+   
+        while nueva != confirmar:
+               print("Las contraseñas no coinciden.")
+               confirmar = input("Repita la nueva contraseña: ")
 
 # ============================================================
 # MENUS DEL SISTEMA
