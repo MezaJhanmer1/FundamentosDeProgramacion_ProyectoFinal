@@ -450,16 +450,18 @@ def registrar_dni_simulado():
 # FUNCION PARA GENERAR CODIGO DE EXPEDIENTE
 # ============================================================
 def generar_codigo():
-    numero = len(expedientes) + 1
+    max_numero = 0
+    for expediente in expedientes:
+        codigo = expediente[0]
+        if codigo.startswith("SED-"):
+            parte = codigo[4:]
+            if parte.isdigit():
+                numero = int(parte)
+                if numero > max_numero:
+                    max_numero = numero
 
-    if numero < 10:
-        codigo = "SED-000" + str(numero)
-    elif numero < 100:
-        codigo = "SED-00" + str(numero)
-    else:
-        codigo = "SED-0" + str(numero)
-
-    return codigo
+    numero = max_numero + 1
+    return "SED-" + str(numero).zfill(4)
 
 
 # ============================================================
