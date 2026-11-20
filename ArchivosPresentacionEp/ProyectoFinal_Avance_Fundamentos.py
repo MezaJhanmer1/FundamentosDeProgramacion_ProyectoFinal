@@ -469,11 +469,10 @@ def generar_codigo():
 # ============================================================
 def contar_expedientes_usuario(dni):
     contador = 0
-
     for expediente in expedientes:
-        if expediente[1] == dni:
+        # Los anulados no consumen cupo del usuario.
+        if expediente[1] == dni and expediente[10] != "Anulado":
             contador += 1
-
     return contador
 
 
@@ -889,6 +888,7 @@ def generar_reporte_estadistico():
     pendientes = 0
     en_proceso = 0
     atendidos = 0
+    anulados = 0
 
     # Contadores por prioridad.
     prioridad_alta = 0
@@ -910,6 +910,8 @@ def generar_reporte_estadistico():
             en_proceso += 1
         elif expediente[10] == "Atendido":
             atendidos += 1
+        elif expediente[10] == "Anulado":
+            anulados += 1
 
         # Contamos segun la prioridad.
         if expediente[11] == "Alta":
@@ -934,6 +936,7 @@ def generar_reporte_estadistico():
     print("Pendientes:", pendientes)
     print("En proceso:", en_proceso)
     print("Atendidos:", atendidos)
+    print("Anulados:", anulados)
 
     print("\n--- EXPEDIENTES POR PRIORIDAD ---")
     print("Alta:", prioridad_alta)
@@ -1046,6 +1049,11 @@ def registrar_respuesta_cita():
         esperar_continuar()
         return
 
+    if expediente_encontrado[10] == "Anulado":
+        print("No se puede registrar una cita para un expediente anulado.")
+        esperar_continuar()
+        return
+
     print("\nExpediente encontrado:")
     print("Ciudadano:", expediente_encontrado[2], expediente_encontrado[3])
     print("Correo destino:", expediente_encontrado[5])
@@ -1122,6 +1130,23 @@ def actualizar_estado():
 
     for expediente in expedientes:
         if expediente[0] == codigo_buscar:
+
+            if expediente[10] == "Anulado":
+                print("\nADVERTENCIA: el expediente esta anulado.")
+                confirmar = input("Reactivar como Pendiente? (S/N): ").strip().upper()
+                while confirmar not in ["S", "N"]:
+                    confirmar = input("Escriba S o N: ").strip().upper()
+                if confirmar != "S":
+                    print("Operacion cancelada.")
+                    return
+                expediente[10] = "Pendiente"
+                try:
+                    guardar_expedientes_json()
+                except OSError as error:
+                    print("Advertencia: no se pudo guardar en JSON:", error)
+                print("Expediente reactivado. Nuevo estado: Pendiente.")
+                return
+            
             print("Estado actual:", expediente[10])
             print("1. Pendiente")
             print("2. En proceso")
