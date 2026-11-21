@@ -1058,7 +1058,8 @@ def menu_persona_natural(posicion_usuario):
         print("2. Editar o anular expediente pendiente")
         print("3. Ver mis expedientes activos")
         print("4. Historial de expedientes")
-        print("5. Cerrar sesion")
+        print("5. Actualizar datos de contacto y contraseña")
+        print("6. Cerrar sesion")
         opcion = input("Seleccione una opcion: ").strip()
 
         if opcion == "1": registrar_expediente(posicion_usuario)
