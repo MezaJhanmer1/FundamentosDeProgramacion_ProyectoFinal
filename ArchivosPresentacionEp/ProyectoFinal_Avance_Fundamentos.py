@@ -919,9 +919,72 @@ def actualizar_datos_usuario(posicion_usuario):
 # ============================================================
 # MENUS DEL SISTEMA
 # ============================================================
+
+def editar_anular_expediente(posicion_usuario):
+    print("\n==========================================")
+    print("   EDITAR / ANULAR EXPEDIENTE PENDIENTE")
+    print("==========================================")
+
+    dni_usuario = usuarios[posicion_usuario][0]
+    codigo_buscar = input("Ingrese el codigo del expediente: ").strip().upper()
+
+    expediente_encontrado = None
+    for expediente in expedientes:
+        if expediente[0].upper() == codigo_buscar:
+            if expediente[1] != dni_usuario:
+                print("No tienes permiso para modificar este expediente.")
+                esperar_continuar()
+                return
+            expediente_encontrado = expediente
+            break
+
+    if expediente_encontrado is None:
+        print("No se encontro el expediente.")
+        esperar_continuar()
+        return
+
+    if expediente_encontrado[10] != "Pendiente":
+        print("\nSolo se pueden editar o anular expedientes en estado Pendiente.")
+        print("Estado actual:", expediente_encontrado[10])
+        esperar_continuar()
+        return
+
+    print("\n1. Editar la descripcion")
+    print("2. Anular el expediente")
+    print("3. Cancelar")
+
+    opcion = input("Seleccione una opcion: ").strip()
+    while opcion not in ["1", "2", "3"]:
+        opcion = input("Opcion incorrecta. Seleccione: ").strip()
+
+    if opcion == "3":
+        return
+
+    if opcion == "2":
+        confirmar = input("Escriba S para confirmar la anulacion: ").strip().upper()
+        while confirmar not in ["S", "N"]:
+            confirmar = input("Escriba S o N: ").strip().upper()
+        if confirmar != "S":
+            print("Operacion cancelada.")
+            return
+        expediente_encontrado[10] = "Anulado"
+        guardar_expedientes_json()
+        print("\nExpediente anulado correctamente.")
+        esperar_continuar()
+        return
+
+    nueva_desc = input("Ingrese la nueva descripcion del tramite: ").strip()
+    while nueva_desc == "":
+        nueva_desc = input("La descripcion no puede estar vacia. Ingrese: ").strip()
+
+    expediente_encontrado[7] = nueva_desc
+    guardar_expedientes_json()
+    print("\nDescripcion actualizada correctamente.")
+    esperar_continuar()
+
 def menu_persona_natural(posicion_usuario):
     opcion = ""
-    while opcion != "4":
+    while opcion != "5":
         print("\n========================================")
         print("       MENU - PERSONA NATURAL")
         print("========================================")
@@ -930,15 +993,17 @@ def menu_persona_natural(posicion_usuario):
         if disponibles < 0: disponibles = 0
         print("Expedientes disponibles:", disponibles, "/", LIMITE_EXPEDIENTES_PERSONA_NATURAL)
         print("1. Registrar/enviar documento")
-        print("2. Ver mis expedientes activos")
-        print("3. Historial de expedientes")
-        print("4. Cerrar sesion")
+        print("2. Editar o anular expediente pendiente")
+        print("3. Ver mis expedientes activos")
+        print("4. Historial de expedientes")
+        print("5. Cerrar sesion")
         opcion = input("Seleccione una opcion: ").strip()
 
         if opcion == "1": registrar_expediente(posicion_usuario)
-        elif opcion == "2": mostrar_expedientes(posicion_usuario, "activo")
-        elif opcion == "3": mostrar_expedientes(posicion_usuario, "historial")
-        elif opcion == "4": print("Sesion cerrada.")
+        elif opcion == "2": editar_anular_expediente(posicion_usuario)
+        elif opcion == "3": mostrar_expedientes(posicion_usuario, "activo")
+        elif opcion == "4": mostrar_expedientes(posicion_usuario, "historial")
+        elif opcion == "5": print("Sesion cerrada.")
         else: print("Opcion incorrecta.")
 
 def menu_administrador(posicion_usuario):
