@@ -1066,9 +1066,10 @@ def menu_persona_natural(posicion_usuario):
         elif opcion == "2": editar_anular_expediente(posicion_usuario)
         elif opcion == "3": mostrar_expedientes(posicion_usuario, "activo")
         elif opcion == "4": mostrar_expedientes(posicion_usuario, "historial")
-        elif opcion == "5": print("Sesion cerrada.")
+        elif opcion == "5": actualizar_datos_usuario(posicion_usuario)
+        elif opcion == "6": print("Sesion cerrada.")
         else: print("Opcion incorrecta.")
-
+        
 def menu_administrador(posicion_usuario):
     opcion = ""
     while opcion != "12":
