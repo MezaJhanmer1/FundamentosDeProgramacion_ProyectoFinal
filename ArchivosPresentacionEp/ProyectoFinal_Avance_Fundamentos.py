@@ -982,6 +982,68 @@ def editar_anular_expediente(posicion_usuario):
     print("\nDescripcion actualizada correctamente.")
     esperar_continuar()
 
+def eliminar_expediente_no_atendido():
+    print("\n==========================================")
+    print("  ELIMINAR EXPEDIENTE NO ATENDIDO")
+    print("  (requiere +10 dias desde la cita)")
+    print("==========================================")
+
+    if len(expedientes) == 0:
+        print("No existen expedientes registrados.")
+        esperar_continuar()
+        return
+
+    codigo_buscar = input("Ingrese el codigo del expediente: ").strip().upper()
+    expediente_encontrado = None
+
+    for expediente in expedientes:
+        if expediente[0].upper() == codigo_buscar:
+            expediente_encontrado = expediente
+            break
+
+    if expediente_encontrado is None:
+        print("Error: el codigo no existe.")
+        esperar_continuar()
+        return
+
+    if expediente_encontrado[10] == "Atendido":
+        print("\nNo se puede eliminar: el expediente ya fue atendido.")
+        esperar_continuar()
+        return
+
+    fecha_cita_str = extraer_fecha_cita(expediente_encontrado[12])
+    if fecha_cita_str is None:
+        print("\nNo se puede eliminar: el expediente no tiene cita programada.")
+        esperar_continuar()
+        return
+
+    dias = dias_desde(fecha_cita_str)
+    if dias is None:
+        print("\nError: la fecha de la cita registrada no es valida.")
+        esperar_continuar()
+        return
+
+    print("\nFecha de la cita:", fecha_cita_str, "| Dias transcurridos:", dias)
+
+    if dias <= 10:
+        print("\nNo se puede eliminar: aun no han pasado mas de 10 dias desde la cita.")
+        esperar_continuar()
+        return
+
+    confirmar = input("Escriba S para confirmar la eliminacion permanente: ").strip().upper()
+    while confirmar not in ["S", "N"]:
+        confirmar = input("Escriba S o N: ").strip().upper()
+
+    if confirmar != "S":
+        print("Operacion cancelada.")
+        esperar_continuar()
+        return
+
+    expedientes.remove(expediente_encontrado)
+    guardar_expedientes_json()
+    print("\nExpediente eliminado correctamente por inasistencia.")
+    esperar_continuar()
+
 def menu_persona_natural(posicion_usuario):
     opcion = ""
     while opcion != "5":
@@ -1008,7 +1070,7 @@ def menu_persona_natural(posicion_usuario):
 
 def menu_administrador(posicion_usuario):
     opcion = ""
-    while opcion != "10":
+    while opcion != "12":
         print("\n========================================")
         print("         MENU - ADMINISTRADOR")
         print("========================================")
@@ -1016,6 +1078,8 @@ def menu_administrador(posicion_usuario):
         print("2. Mostrar todos los expedientes")
         print("3. Buscar expediente")
         print("4. Actualizar estado")
+        print("5. Editar o anular expediente pendiente")
+        print("6. Eliminar expediente no atendido")
         print("5. Registrar respuesta por correo de cita")
         print("6. Ordenar por prioridad")
         print("7. Guardar expedientes en archivo")
@@ -1028,12 +1092,14 @@ def menu_administrador(posicion_usuario):
         elif opcion == "2": mostrar_expedientes(posicion_usuario)
         elif opcion == "3": buscar_expediente(posicion_usuario)
         elif opcion == "4": actualizar_estado()
-        elif opcion == "5": registrar_respuesta_cita()
-        elif opcion == "6": ordenar_expedientes()
-        elif opcion == "7": guardar_archivo()
-        elif opcion == "8": registrar_dni_simulado()
-        elif opcion == "9": generar_reporte_estadistico()
-        elif opcion == "10": print("Sesion cerrada.")
+        elif opcion == "5": editar_anular_expediente(posicion_usuario)
+        elif opcion == "6": eliminar_expediente_no_atendido()
+        elif opcion == "7": registrar_respuesta_cita()
+        elif opcion == "8": ordenar_expedientes()
+        elif opcion == "9": guardar_archivo()
+        elif opcion == "10": registrar_dni_simulado()
+        elif opcion == "11": generar_reporte_estadistico()
+        elif opcion == "12": print("Sesion cerrada.")
         else: print("Opcion incorrecta.")
 
 # ============================================================
