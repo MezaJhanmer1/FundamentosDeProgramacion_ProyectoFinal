@@ -926,12 +926,13 @@ def editar_anular_expediente(posicion_usuario):
     print("==========================================")
 
     dni_usuario = usuarios[posicion_usuario][0]
+    es_administrador = usuarios[posicion_usuario][6] == 2
     codigo_buscar = input("Ingrese el codigo del expediente: ").strip().upper()
 
     expediente_encontrado = None
     for expediente in expedientes:
         if expediente[0].upper() == codigo_buscar:
-            if expediente[1] != dni_usuario:
+            if not es_administrador and expediente[1] != dni_usuario:
                 print("No tienes permiso para modificar este expediente.")
                 esperar_continuar()
                 return
@@ -1046,7 +1047,7 @@ def eliminar_expediente_no_atendido():
 
 def menu_persona_natural(posicion_usuario):
     opcion = ""
-    while opcion != "5":
+    while opcion != "6":
         print("\n========================================")
         print("       MENU - PERSONA NATURAL")
         print("========================================")
@@ -1082,12 +1083,12 @@ def menu_administrador(posicion_usuario):
         print("4. Actualizar estado")
         print("5. Editar o anular expediente pendiente")
         print("6. Eliminar expediente no atendido")
-        print("5. Registrar respuesta por correo de cita")
-        print("6. Ordenar por prioridad")
-        print("7. Guardar expedientes en archivo")
-        print("8. Agregar DNI a base JSON")
-        print("9. Generar reporte estadistico")
-        print("10. Cerrar sesion")
+        print("7. Registrar respuesta por correo de cita")
+        print("8. Ordenar por prioridad")
+        print("9. Guardar expedientes en archivo")
+        print("10. Agregar DNI a base JSON")
+        print("11. Generar reporte estadistico")
+        print("12. Cerrar sesion")
         opcion = input("Seleccione una opcion: ").strip()
 
         if opcion == "1": registrar_expediente(posicion_usuario)
