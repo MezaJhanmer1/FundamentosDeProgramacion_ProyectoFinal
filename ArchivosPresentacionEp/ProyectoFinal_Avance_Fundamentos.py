@@ -731,10 +731,17 @@ def registrar_respuesta_cita():
     print("\nCiudadano:", expediente_encontrado[2], expediente_encontrado[3])
     print("Correo destino:", expediente_encontrado[5])
     
-    fecha_cita = input("\nIngrese la fecha de la cita (DD/MM/AAAA): ").strip()
-    while validar_fecha(fecha_cita) == False:
-        fecha_cita = input("Fecha invalida. Ingrese nuevamente (DD/MM/AAAA): ").strip()
-
+    hoy = datetime.now().date()
+    while True:
+        fecha_cita = input("\nIngrese la fecha de la cita (DD/MM/AAAA): ").strip()
+        if not validar_fecha(fecha_cita):
+            print("Formato o fecha invalida. Use DD/MM/AAAA.")
+            continue
+        if datetime.strptime(fecha_cita, "%d/%m/%Y").date() <= hoy:
+            print("La fecha de la cita debe ser mayor a la fecha actual (" + hoy.strftime("%d/%m/%Y") + ").")
+            continue
+        break
+    
     mensaje_cita = input("Ingrese el mensaje o detalle de la cita: ").strip()
     while mensaje_cita == "":
         mensaje_cita = input("El mensaje no puede estar vacio. Ingrese detalle: ").strip()
