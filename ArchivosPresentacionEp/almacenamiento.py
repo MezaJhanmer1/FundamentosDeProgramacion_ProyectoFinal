@@ -1,6 +1,15 @@
 
 # Manejar el almacenamiento en disco y mantener las listas en memoria.
 
+import json
+import os
+from config import (
+    EXPEDIENTES_ARCHIVO,
+    BASE_DNI_ARCHIVO,
+    USUARIOS_ARCHIVO,
+    EXPORTAR_TXT_ARCHIVO
+)
+
 # =======================================
 # CARGAR EXPEDIENTES
 # =======================================
@@ -172,7 +181,6 @@ def guardar_usuarios_json():
 # GUARDAR ARCHIVC EXPEDIENTES
 # =======================================
 
-
 def guardar_archivo():
     print("\n==========================================")
     print("       GUARDAR EXPEDIENTES")
@@ -183,8 +191,7 @@ def guardar_archivo():
 
     try:
         guardar_expedientes_json()
-        archivo_txt = os.path.join(os.path.dirname(os.path.abspath(__file__)), "expedientes_sedapal.txt")
-        with open(archivo_txt, "w", encoding="utf-8") as archivo:
+        with open(EXPORTAR_TXT_ARCHIVO, "w", encoding="utf-8") as archivo:
             for exp in expedientes:
                 archivo.write("====================================\n")
                 archivo.write("Codigo: " + exp[0] + "\nDNI: " + exp[1] + "\n")
@@ -198,3 +205,4 @@ def guardar_archivo():
         print("Los expedientes fueron guardados en expedientes_sedapal.txt y JSON.")
     except OSError as error:
         print("No se pudieron guardar los expedientes:", error)
+
