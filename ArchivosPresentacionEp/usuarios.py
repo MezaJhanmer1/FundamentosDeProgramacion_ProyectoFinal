@@ -1,5 +1,21 @@
-
 # USUARIOS.PY -  Gestionar cuentas, RENIEC simulada y funciones de seguridad.
+
+from validaciones import (
+    esperar_continuar,
+    texto_valido,
+    validar_dni,
+    validar_fecha_emision,
+    validar_correo,
+    validar_telefono,
+    solicitar_telefono,
+    solicitar_correo
+)
+from almacenamiento import (
+    base_dni,
+    usuarios,
+    guardar_base_dni,
+    guardar_usuarios_json
+)
 
 # =======================================
 # BUSCAR REGISTRO DNI
@@ -11,7 +27,6 @@ def buscar_registro_dni(dni):
         if registro["dni"] == dni:
             return registro
     return None
-
 
 # ============================================================
 # FUNCIONES DE RENIEC SIMULACION
@@ -96,7 +111,6 @@ def registrar_dni_simulado():
     base_dni.append(nuevo_registro)
     print("\nDNI agregado y guardado correctamente.")
     print("Nombre:", nombres, apellidos)
-
 
 # =======================================
 # REGISTRO DE USUARIOS
@@ -373,7 +387,7 @@ def recuperar_contrasena():
 
     usuarios[posicion][5] = nueva_clave
 
-    # ---- Paso 7: persistencia ----
+    # ---- Paso 7: almacenamiento ----
     try:
         guardar_usuarios_json()
     except OSError as error:
