@@ -1,6 +1,37 @@
 # expedientes.py
 # Módulo de gestión de expedientes
 
+from datetime import datetime
+
+# --- Configuración ---
+from config import (
+    LIMITE_EXPEDIENTES_PERSONA_NATURAL,
+    LIMITE_EXPEDIENTES_ADMINISTRADOR,
+    LIMITE_CONSULTAS_PERSONA_NATURAL,
+)
+
+# --- Validaciones ---
+from validaciones import (
+    validar_dni,
+    validar_fecha,
+    solicitar_telefono,
+    solicitar_correo,
+    dias_desde,
+    extraer_fecha_cita,
+    esperar_continuar,
+)
+
+# --- Persistencia ---
+from persistencia import (
+    expedientes,
+    usuarios,
+    guardar_expedientes_json,
+    guardar_usuarios_json,
+)
+
+# --- RENIEC simulada ---
+from usuarios import consultar_reniec
+
 # ------------------------------------------------------------
 # GENERAR_CODIGO
 # GENERA EL SIGUIENTE CÓDIGO DE EXPEDIENTE ÚNICO (EJ. SED-0001).
