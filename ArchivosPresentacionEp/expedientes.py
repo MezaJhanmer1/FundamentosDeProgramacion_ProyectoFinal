@@ -1,6 +1,6 @@
 # expedientes.py
 # Módulo de gestión de expedientes
-
+import os
 from datetime import datetime
 
 # --- Configuración ---
@@ -610,8 +610,61 @@ def eliminar_expediente_no_atendido():
         print("Operacion cancelada.")
         esperar_continuar()
         return
+    
+
+# ------------------------------------------------------------
+# GUARDAR_ARCHIVO
+# EXPORTA TODOS LOS EXPEDIENTES A UN ARCHIVO TXT.
+# ------------------------------------------------------------
+
+def guardar_archivo():
+
+    print("\n==========================================")
+    print("       GUARDAR EXPEDIENTES")
+    print("==========================================")
+
+    if len(expedientes) == 0:
+        print("No existen expedientes para guardar.")
+        esperar_continuar()
+        return
+
+    try:
+
+        ruta_archivo = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "SEDAPAL_reporte_expedientes.txt"
+        )
+
+        with open(ruta_archivo, "w", encoding="utf-8") as archivo:
+
+            for expediente in expedientes:
+
+                archivo.write("====================================\n")
+                archivo.write("CODIGO: " + expediente[0] + "\n")
+                archivo.write("DNI: " + expediente[1] + "\n")
+                archivo.write("NOMBRES: " + expediente[2] + "\n")
+                archivo.write("APELLIDOS: " + expediente[3] + "\n")
+                archivo.write("TELEFONO: " + expediente[4] + "\n")
+                archivo.write("CORREO: " + expediente[5] + "\n")
+                archivo.write("TIPO: " + expediente[6] + "\n")
+                archivo.write("DESCRIPCION: " + expediente[7] + "\n")
+                archivo.write("SEDE: " + expediente[8] + "\n")
+                archivo.write("FECHA: " + expediente[9] + "\n")
+                archivo.write("ESTADO: " + expediente[10] + "\n")
+                archivo.write("PRIORIDAD: " + expediente[11] + "\n")
+                archivo.write("RESPUESTA DE CITA: " + expediente[12] + "\n\n")
+
+        print("\nExpedientes exportados correctamente.")
+        print("Archivo: SEDAPAL_reporte_expedientes.txt")
+
+    except OSError as error:
+        print("\nError al guardar el archivo:", error)
+
+    esperar_continuar()
+
 
     expedientes.remove(expediente_encontrado)
     guardar_expedientes_json()
+    
     print("\nExpediente eliminado correctamente por inasistencia.")
     esperar_continuar()

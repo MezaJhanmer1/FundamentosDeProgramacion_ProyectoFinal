@@ -1,0 +1,120 @@
+====================================
+CODIGO: SED-0001
+DNI: 11111111
+NOMBRES: Ana
+APELLIDOS: Torres
+TELEFONO: 999999999
+CORREO: ana@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: hgola
+SEDE: SJL
+FECHA: 20/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Media
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0002
+DNI: 60549429
+NOMBRES: Jhanmer
+APELLIDOS: Meza
+TELEFONO: 939827182
+CORREO: xd@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: quejaxd
+SEDE: SJL
+FECHA: 17/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Alta
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0003
+DNI: 60549429
+NOMBRES: Jhanmer
+APELLIDOS: Meza
+TELEFONO: 939827182
+CORREO: d@gmail.com
+TIPO: Solicitud
+DESCRIPCION: xds
+SEDE: SJL
+FECHA: 17/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Media
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0004
+DNI: 11111111
+NOMBRES: Ana
+APELLIDOS: Torres
+TELEFONO: 999999999
+CORREO: ana@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: hgol
+SEDE: SJL
+FECHA: 20/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Media
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0005
+DNI: 75605249
+NOMBRES: Harold
+APELLIDOS: Santa Cruz Mondragon Harold
+TELEFONO: 939827182
+CORREO: c@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: 1
+SEDE: SJL
+FECHA: 17/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Alta
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0006
+DNI: 60549429
+NOMBRES: Jhanmer
+APELLIDOS: Meza
+TELEFONO: 939827182
+CORREO: l@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: 2
+SEDE: SJL
+FECHA: 17/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Alta
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0007
+DNI: 60549429
+NOMBRES: Jhanmer
+APELLIDOS: Meza
+TELEFONO: 939827182
+CORREO: xd@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: 1
+SEDE: SJL
+FECHA: 11/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Alta
+RESPUESTA DE CITA: 
+
+====================================
+CODIGO: SED-0008
+DNI: 11111111
+NOMBRES: Ana
+APELLIDOS: Torres
+TELEFONO: 999999999
+CORREO: awe@gmail.com
+TIPO: Queja y reclamo
+DESCRIPCION: 1
+SEDE: SJL
+FECHA: 20/11/2026
+ESTADO: Pendiente
+PRIORIDAD: Alta
+RESPUESTA DE CITA: 
+

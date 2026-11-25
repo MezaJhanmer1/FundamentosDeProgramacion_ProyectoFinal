@@ -110,3 +110,5 @@ def solicitar_correo():
         print("Correo electronico incorrecto. Use una cuenta @gmail.com.")
         correo = input("Ingrese nuevamente su correo: ").strip()
     return correo
+def esperar_continuar():
+    input("\nPresione ENTER para volver al menu...")

@@ -1,0 +1,12 @@
+====================================
+Codigo: SED-0001
+DNI: 11111111
+Ciudadano: Ana Torres
+Telefono/Celular: 999999999
+Correo electronico: ana@gmail.com
+Tipo: Queja y reclamo
+Descripcion: hgola
+Sede: SJL
+Fecha: 20/11/2026
+Estado: Pendiente
+Prioridad: Media
