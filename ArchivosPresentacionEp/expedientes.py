@@ -21,8 +21,8 @@ from validaciones import (
     esperar_continuar,
 )
 
-# --- Persistencia ---
-from persistencia import (
+# --- Almacenamiento ---
+from almacenamiento import (
     expedientes,
     usuarios,
     guardar_expedientes_json,
