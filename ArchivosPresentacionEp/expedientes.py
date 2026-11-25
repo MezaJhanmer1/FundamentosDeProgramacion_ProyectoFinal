@@ -607,10 +607,17 @@ def eliminar_expediente_no_atendido():
         confirmar = input("Escriba S o N: ").strip().upper()
 
     if confirmar != "S":
-        print("Operacion cancelada.")
+        print("\nOperación cancelada.")
         esperar_continuar()
         return
-    
+
+    # ELIMINAR EXPEDIENTE POR INASISTENCIA
+    expedientes.remove(expediente_encontrado)
+    guardar_expedientes_json()
+
+    print("\nExpediente eliminado correctamente por inasistencia.")
+    esperar_continuar()
+
 
 # ------------------------------------------------------------
 # GUARDAR_ARCHIVO
@@ -663,8 +670,3 @@ def guardar_archivo():
     esperar_continuar()
 
 
-    expedientes.remove(expediente_encontrado)
-    guardar_expedientes_json()
-    
-    print("\nExpediente eliminado correctamente por inasistencia.")
-    esperar_continuar()
